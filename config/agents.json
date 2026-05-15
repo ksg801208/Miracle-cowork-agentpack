@@ -8,8 +8,11 @@
     "priority": 1,
     "output_type": "document",
     "input_schema": {
+      "announcement_title": {"type": "text", "label": "공고명", "required": true, "placeholder": "예) 2024년도 중소기업 기술개발 지원사업 공고"},
       "announcement_text": {"type": "textarea", "label": "공고문 내용", "required": true, "placeholder": "공고문 전체 내용을 붙여넣기 하세요"},
-      "organization_type": {"type": "select", "label": "신청 기관 유형", "required": false, "options": ["중소기업", "중견기업", "대기업", "연구소", "대학"]}
+      "organization_type": {"type": "select", "label": "신청 기관 유형", "required": true, "options": ["중소기업", "중견기업", "대기업", "연구소", "대학", "산학연 컨소시엄"]},
+      "support_program": {"type": "text", "label": "지원사업 유형", "required": false, "placeholder": "예) 중소기업 기술개발 R&D, TIPS, 창업성장기술개발"},
+      "submission_deadline": {"type": "text", "label": "접수 마감일시", "required": false, "placeholder": "예) 2024.04.15 18:00"}
     },
     "prompt_template_path": "prompts/government_rd/announcement_analysis.md",
     "review_rule_path": "schemas/review/govt_rd_review.json",
@@ -24,8 +27,11 @@
     "priority": 2,
     "output_type": "table",
     "input_schema": {
-      "announcement_requirements": {"type": "textarea", "label": "공고 요건 (자격 및 제한 사항)", "required": true, "placeholder": "공고문의 신청자격 및 제한조건 부분"},
-      "company_profile": {"type": "textarea", "label": "당사 현황", "required": true, "placeholder": "기업 규모, 업력, 매출, R&D 투자 현황 등"}
+      "announcement_requirements": {"type": "textarea", "label": "공고 자격 요건", "required": true, "placeholder": "공고문의 신청자격 및 제한조건 전체"},
+      "company_profile": {"type": "textarea", "label": "당사 기업 현황", "required": true, "placeholder": "기업 유형, 업력, 매출액, 부채비율, R&D 투자비율 등"},
+      "key_technology": {"type": "textarea", "label": "핵심 기술 및 보유 특허·인증", "required": false, "placeholder": "보유 특허, 인증(Inno-Biz/벤처), 주요 기술 역량"},
+      "previous_rd_experience": {"type": "textarea", "label": "정부 R&D 수행 이력", "required": false, "placeholder": "최근 3년 이내 정부 과제 수행 실적 (과제명, 금액, 기간)"},
+      "annual_revenue": {"type": "text", "label": "최근 연매출액 (억원)", "required": false, "placeholder": "예) 50"}
     },
     "prompt_template_path": "prompts/government_rd/eligibility_review.md",
     "review_rule_path": "schemas/review/govt_rd_review.json",
@@ -40,10 +46,13 @@
     "priority": 1,
     "output_type": "document",
     "input_schema": {
-      "project_name": {"type": "text", "label": "과제명", "required": true, "placeholder": "예) AI 기반 업무자동화 솔루션 개발"},
-      "project_purpose": {"type": "textarea", "label": "사업 목적 및 배경", "required": true, "placeholder": "개발 동기, 시장 필요성, 기술적 혁신성 등"},
-      "implementation_plan": {"type": "textarea", "label": "추진 계획", "required": false, "placeholder": "단계별 개발 계획 및 방법론"},
-      "expected_outcomes": {"type": "textarea", "label": "기대 성과", "required": false, "placeholder": "정량적/정성적 목표 성과"}
+      "project_name": {"type": "text", "label": "과제명", "required": true, "placeholder": "예) AI 기반 중소기업 업무자동화 플랫폼 개발"},
+      "project_purpose": {"type": "textarea", "label": "사업 목적 및 필요성", "required": true, "placeholder": "개발 동기, 시장 문제점, 핵심 해결방안"},
+      "target_market": {"type": "textarea", "label": "목표 시장 및 고객", "required": true, "placeholder": "타겟 고객군, 시장 규모(TAM/SAM/SOM), 경쟁 현황"},
+      "business_model": {"type": "textarea", "label": "비즈니스 모델", "required": false, "placeholder": "수익 창출 방식, 가격 정책, 파트너십 전략"},
+      "implementation_plan": {"type": "textarea", "label": "단계별 추진 계획", "required": false, "placeholder": "1단계/2단계/3단계 개발 계획 및 마일스톤"},
+      "expected_outcomes": {"type": "textarea", "label": "기대 성과 및 파급효과", "required": false, "placeholder": "정량 목표(매출·고용·특허), 정성적 기대효과"},
+      "funding_amount": {"type": "text", "label": "신청 금액 (만원)", "required": false, "placeholder": "예) 20000"}
     },
     "prompt_template_path": "prompts/government_rd/business_plan.md",
     "review_rule_path": "schemas/review/govt_rd_review.json",
@@ -58,9 +67,12 @@
     "priority": 2,
     "output_type": "document",
     "input_schema": {
-      "research_title": {"type": "text", "label": "연구 과제명", "required": true, "placeholder": ""},
-      "research_objectives": {"type": "textarea", "label": "연구 목표 및 내용", "required": true, "placeholder": "핵심 연구 목표와 세부 연구 내용"},
-      "research_methodology": {"type": "textarea", "label": "연구 방법론", "required": false, "placeholder": "기술 개발 방법, 실험 설계 등"},
+      "research_title": {"type": "text", "label": "연구 과제명", "required": true, "placeholder": "예) AI 기반 자연어처리 엔진 핵심기술 개발"},
+      "research_objectives": {"type": "textarea", "label": "연구 목표 및 핵심 내용", "required": true, "placeholder": "최종 목표, 단계별 목표, 핵심 연구 내용"},
+      "core_technology": {"type": "textarea", "label": "핵심 기술 및 연구 방법론", "required": true, "placeholder": "개발할 핵심 기술, 연구 방법론, 기술 혁신성"},
+      "development_stages": {"type": "textarea", "label": "단계별 개발 내용", "required": false, "placeholder": "1단계/2단계 목표 및 상세 개발 내용"},
+      "performance_indicators": {"type": "textarea", "label": "목표 성과 지표", "required": false, "placeholder": "TRL 수준, 특허 출원/등록, 논문, 논문 SCI 게재 등"},
+      "commercialization_strategy": {"type": "textarea", "label": "사업화 전략", "required": false, "placeholder": "기술이전, 제품화, 해외 진출 계획"},
       "duration": {"type": "text", "label": "연구 기간", "required": false, "placeholder": "예) 2024.07 ~ 2025.06 (12개월)"}
     },
     "prompt_template_path": "prompts/government_rd/rd_plan.md",
@@ -76,8 +88,10 @@
     "priority": 3,
     "output_type": "table",
     "input_schema": {
-      "evaluation_items": {"type": "textarea", "label": "평가항목 목록", "required": true, "placeholder": "평가항목명과 배점을 입력하세요"},
-      "company_strengths": {"type": "textarea", "label": "당사 강점 및 실적", "required": true, "placeholder": "특허, 인증, 매출, 수상 실적 등"}
+      "evaluation_items": {"type": "textarea", "label": "평가항목 및 배점", "required": true, "placeholder": "평가항목명, 배점, 평가 기준을 입력\n예) 기술성(30점): 혁신성, 실현가능성\n    사업성(25점): 시장성, 수익모델"},
+      "company_strengths": {"type": "textarea", "label": "당사 핵심 강점 및 실적", "required": true, "placeholder": "보유 특허, 인증, 수상 실적, 고객 레퍼런스, 기술 역량"},
+      "past_achievements": {"type": "textarea", "label": "유사 과제 수행 실적", "required": false, "placeholder": "최근 3년 이내 정부과제·민간 R&D 수행 실적"},
+      "weak_areas": {"type": "textarea", "label": "취약 예상 항목 및 보강 방향", "required": false, "placeholder": "점수가 낮을 것으로 예상되는 항목과 보완 방안"}
     },
     "prompt_template_path": "prompts/government_rd/evaluation_response.md",
     "review_rule_path": "schemas/review/govt_rd_review.json",
@@ -92,8 +106,11 @@
     "priority": 4,
     "output_type": "checklist",
     "input_schema": {
-      "announcement_documents_section": {"type": "textarea", "label": "공고 제출서류 안내", "required": true, "placeholder": "공고문의 제출서류 목록 부분"},
-      "applicant_type": {"type": "text", "label": "신청자 유형", "required": false, "placeholder": "예) 중소기업 단독 / 산학연 컨소시엄"}
+      "announcement_documents_section": {"type": "textarea", "label": "공고 제출서류 안내", "required": true, "placeholder": "공고문의 제출서류 목록 및 안내 전체"},
+      "applicant_type": {"type": "select", "label": "신청자 유형", "required": true, "options": ["중소기업 단독", "산학연 컨소시엄", "중소기업+대학", "중소기업+연구소"]},
+      "submission_system": {"type": "text", "label": "접수 시스템", "required": false, "placeholder": "예) IRIS, e-나라도움, 범부처통합연구지원시스템"},
+      "submission_deadline": {"type": "text", "label": "제출 마감일시", "required": false, "placeholder": "예) 2024.04.15 18:00"},
+      "responsible_person": {"type": "text", "label": "제출 담당자", "required": false, "placeholder": "예) 김담당 (010-xxxx-xxxx)"}
     },
     "prompt_template_path": "prompts/government_rd/submission_checklist.md",
     "review_rule_path": "schemas/review/govt_rd_review.json",
@@ -108,10 +125,12 @@
     "priority": 5,
     "output_type": "table",
     "input_schema": {
-      "total_budget": {"type": "text", "label": "총 사업비 (원)", "required": true, "placeholder": "예) 200,000,000"},
-      "project_duration": {"type": "text", "label": "사업 기간", "required": true, "placeholder": "예) 12개월"},
-      "team_size": {"type": "text", "label": "연구팀 규모", "required": false, "placeholder": "예) 5명"},
-      "main_activities": {"type": "textarea", "label": "주요 연구 활동", "required": false, "placeholder": "핵심 R&D 활동 목록"}
+      "total_budget": {"type": "text", "label": "총 사업비 (만원)", "required": true, "placeholder": "예) 20000"},
+      "government_ratio": {"type": "select", "label": "정부출연금 비율", "required": true, "options": ["100%", "75%", "67%", "50%"]},
+      "project_duration_months": {"type": "text", "label": "사업 기간 (개월)", "required": true, "placeholder": "예) 12"},
+      "team_size": {"type": "text", "label": "연구팀 인원 수", "required": false, "placeholder": "예) 5"},
+      "main_activities": {"type": "textarea", "label": "주요 연구 활동", "required": false, "placeholder": "핵심 R&D 활동, 장비 구입 계획, 위탁 연구 내용"},
+      "indirect_cost_rate": {"type": "select", "label": "간접비 요율", "required": false, "options": ["10%", "15%", "20%", "25%", "30%"]}
     },
     "prompt_template_path": "prompts/government_rd/budget_calculation.md",
     "review_rule_path": "schemas/review/govt_rd_review.json",
@@ -126,8 +145,10 @@
     "priority": 6,
     "output_type": "table",
     "input_schema": {
-      "team_members": {"type": "textarea", "label": "팀원 정보 (이름, 직급, 전문분야)", "required": true, "placeholder": "한 줄에 한 명씩 입력"},
-      "project_tasks": {"type": "textarea", "label": "주요 과제 업무", "required": false, "placeholder": "수행 과제의 주요 업무 목록"}
+      "team_members": {"type": "textarea", "label": "팀원 정보", "required": true, "placeholder": "이름, 직급/학위, 전문분야, 담당역할 (한 줄에 한 명씩)\n예) 홍길동, 박사/이사, AI/ML, 기술총괄"},
+      "project_tasks": {"type": "textarea", "label": "주요 과제 업무", "required": true, "placeholder": "수행 과제의 핵심 업무 목록 (세부 과업)"},
+      "project_duration": {"type": "text", "label": "과제 수행 기간", "required": false, "placeholder": "예) 2024.07 ~ 2025.06 (12개월)"},
+      "performance_metrics": {"type": "textarea", "label": "목표 성과 지표", "required": false, "placeholder": "고용창출(명), 매출목표(억원), 특허(건), 논문(편) 등"}
     },
     "prompt_template_path": "prompts/government_rd/research_team.md",
     "review_rule_path": "schemas/review/govt_rd_review.json",
@@ -142,10 +163,12 @@
     "priority": 7,
     "output_type": "table",
     "input_schema": {
-      "project_name": {"type": "text", "label": "과제명", "required": true, "placeholder": ""},
+      "project_name": {"type": "text", "label": "과제명", "required": true, "placeholder": "예) AI 기반 업무자동화 플랫폼 개발"},
       "start_date": {"type": "text", "label": "시작일", "required": true, "placeholder": "예) 2024.07.01"},
       "end_date": {"type": "text", "label": "종료일", "required": true, "placeholder": "예) 2025.06.30"},
-      "main_tasks": {"type": "textarea", "label": "주요 과업 목록", "required": true, "placeholder": "수행할 주요 과업을 목록으로 입력"}
+      "main_tasks": {"type": "textarea", "label": "주요 과업 목록", "required": true, "placeholder": "수행할 주요 과업 목록\n예) 요구사항 분석, Agent 엔진 개발, UI/UX 구현, 품질 테스트, 사업화 준비"},
+      "schedule_type": {"type": "select", "label": "일정 표시 단위", "required": false, "options": ["월별", "분기별", "반기별"]},
+      "milestones": {"type": "textarea", "label": "핵심 마일스톤", "required": false, "placeholder": "중간보고, 최종보고, 성과발표 등 주요 이벤트와 목표 날짜"}
     },
     "prompt_template_path": "prompts/government_rd/wbs_schedule.md",
     "review_rule_path": "schemas/review/govt_rd_review.json",
@@ -160,8 +183,10 @@
     "priority": 8,
     "output_type": "checklist",
     "input_schema": {
-      "business_plan_sections": {"type": "textarea", "label": "사업계획서 주요 내용 요약", "required": true, "placeholder": "각 장별 핵심 내용을 요약하여 입력"},
-      "checklist_focus": {"type": "text", "label": "중점 검토 항목", "required": false, "placeholder": "예) 기술성, 사업성, 예산 적정성"}
+      "business_plan_sections": {"type": "textarea", "label": "사업계획서 각 장별 주요 내용", "required": true, "placeholder": "제1장 개요, 제2장 기술개발, 제3장 사업화 등 각 장별 핵심 내용 요약"},
+      "evaluation_criteria": {"type": "textarea", "label": "평가 기준 및 배점", "required": false, "placeholder": "예) 기술성(30), 사업성(25), 수행능력(20), 파급효과(15), 정책부합(10)"},
+      "checklist_focus": {"type": "select", "label": "중점 검토 영역", "required": false, "options": ["전체 종합", "기술성 집중", "사업성 집중", "예산 적정성", "논리 일관성"]},
+      "target_score": {"type": "text", "label": "목표 점수 (100점 만점)", "required": false, "placeholder": "예) 85"}
     },
     "prompt_template_path": "prompts/government_rd/final_review.md",
     "review_rule_path": "schemas/review/govt_rd_review.json",
