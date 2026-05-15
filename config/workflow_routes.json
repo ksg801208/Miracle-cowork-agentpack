@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "routes": [
+    {
+      "route_id": "govt_rd_full",
+      "name": "정부 R&D 완전 패키지",
+      "description": "공고문 분석부터 최종 제출까지 전 단계 자동화",
+      "steps": [
+        "government_announcement_analysis",
+        "application_eligibility_review",
+        "business_plan_writing",
+        "rd_plan_writing",
+        "evaluation_criteria_response",
+        "budget_calculation",
+        "wbs_schedule",
+        "submission_checklist",
+        "final_submission_review"
+      ]
+    },
+    {
+      "route_id": "sw_dev_deliverables",
+      "name": "SW 개발 산출물 패키지",
+      "description": "요구정의서부터 WBS까지 개발 산출물 일괄 생성",
+      "steps": [
+        "requirements_definition",
+        "function_specification",
+        "screen_design",
+        "db_design",
+        "api_specification",
+        "dev_wbs",
+        "deliverable_management"
+      ]
+    }
+  ]
+}

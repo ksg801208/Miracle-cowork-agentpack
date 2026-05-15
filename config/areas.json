@@ -1,0 +1,82 @@
+[
+  {
+    "area_id": "government_rd",
+    "name_ko": "정부 R&D / 지원사업 대응",
+    "name_en": "Government R&D Support",
+    "icon_key": "government",
+    "display_order": 1,
+    "description": "정부 R&D 과제 및 지원사업 신청을 위한 공고문 분석, 사업계획서, 연구개발계획서 등 핵심 문서 자동 작성",
+    "agent_count": 10,
+    "color": "#1E40AF"
+  },
+  {
+    "area_id": "planning_strategy",
+    "name_ko": "기획 / 전략 문서 작성",
+    "name_en": "Planning & Strategy",
+    "icon_key": "planning",
+    "display_order": 2,
+    "description": "과제기획서, 사업전략, 비즈니스모델, 시장조사 보고서, IR 자료 등 전략 문서 작성 자동화",
+    "agent_count": 7,
+    "color": "#7C3AED"
+  },
+  {
+    "area_id": "meeting_work",
+    "name_ko": "회의 / 업무관리",
+    "name_en": "Meeting & Work Management",
+    "icon_key": "meeting",
+    "display_order": 3,
+    "description": "회의록, 업무지시서, 주간/월간 보고서, 이슈 관리 등 업무 효율화를 위한 문서 자동 생성",
+    "agent_count": 7,
+    "color": "#059669"
+  },
+  {
+    "area_id": "rd_deliverables",
+    "name_ko": "연구개발 프로세스 산출물",
+    "name_en": "R&D Process Deliverables",
+    "icon_key": "research",
+    "display_order": 4,
+    "description": "요구정의서, 기능명세서, DB 설계, API 명세서, 테스트케이스 등 SW 개발 산출물 자동 작성",
+    "agent_count": 8,
+    "color": "#DC2626"
+  },
+  {
+    "area_id": "proposal_sales",
+    "name_ko": "제안 / 영업 / 고객 대응",
+    "name_en": "Proposal & Sales",
+    "icon_key": "sales",
+    "display_order": 5,
+    "description": "고객 제안서, 회사소개서, 견적서, 고객 미팅 준비, 이메일 등 영업 및 고객 대응 문서 자동화",
+    "agent_count": 7,
+    "color": "#D97706"
+  },
+  {
+    "area_id": "knowledge_document",
+    "name_ko": "문서 / 지식관리",
+    "name_en": "Document & Knowledge Management",
+    "icon_key": "knowledge",
+    "display_order": 6,
+    "description": "문서 요약, 비교, 품질검토, 템플릿 생성 등 지식관리 및 문서 품질 향상을 위한 Agent",
+    "agent_count": 7,
+    "color": "#0891B2"
+  },
+  {
+    "area_id": "patent_commercialization",
+    "name_ko": "특허 / 기술사업화",
+    "name_en": "Patent & Commercialization",
+    "icon_key": "patent",
+    "display_order": 7,
+    "description": "특허 아이디어 정리, 출원서 초안, 선행기술 조사, 기술사업화 전략 수립 지원",
+    "agent_count": 5,
+    "color": "#BE185D"
+  },
+  {
+    "area_id": "claude_code_dev",
+    "name_ko": "개발 협업 / Claude Code 연계",
+    "name_en": "Dev Collaboration & Claude Code",
+    "icon_key": "development",
+    "display_order": 8,
+    "description": "Claude Code 프롬프트 생성, 폴더 구조 설계, 버그 리포트, 개발 문서 자동화 등 개발 협업 Agent",
+    "agent_count": 6,
+    "color": "#374151"
+  }
+]

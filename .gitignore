@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build output
+dist/
+frontend/dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+
+# Database
+*.db
+backend/*.db
+miracle_agentpack.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Playwright / temp scripts
+screenshots/
+screenshot.mjs
+
+# Root-level npm (Playwright 설치용)
+/package.json
+/package-lock.json
+/node_modules/
+
+# Claude Code 세션 데이터
+.claude/

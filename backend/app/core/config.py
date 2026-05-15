@@ -1,0 +1,12 @@
+from pydantic_settings import BaseSettings
+from pathlib import Path
+
+class Settings(BaseSettings):
+    app_name: str = "Miracle-Cowork AgentPack"
+    database_url: str = "sqlite:///./miracle_agentpack.db"
+    config_dir: Path = Path(__file__).parent.parent.parent.parent / "config"
+
+    class Config:
+        env_file = ".env"
+
+settings = Settings()
