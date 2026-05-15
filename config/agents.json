@@ -139,9 +139,9 @@
   {
     "agent_id": "research_team_composition",
     "area_id": "government_rd",
-    "name_ko": "연구팀 구성",
-    "name_en": "Research Team Composition",
-    "description": "과제 수행을 위한 연구팀 구성 계획 및 역할 분담표를 작성합니다",
+    "name_ko": "추진체계 및 참여인력 구성",
+    "name_en": "Research Execution Structure & Team Composition",
+    "description": "과제 추진체계, 참여인력 역할 분담, 성과 지표를 정리합니다. 연구개발계획서 작성 Agent와 연계하여 사용하세요.",
     "priority": 6,
     "output_type": "table",
     "input_schema": {
