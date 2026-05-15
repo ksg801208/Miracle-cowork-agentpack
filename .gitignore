@@ -40,6 +40,10 @@ Thumbs.db
 # Playwright / temp scripts
 screenshots/
 screenshot.mjs
+check.mjs
+
+# 로컬 실행 로그
+backend.log
 
 # Root-level npm (Playwright 설치용)
 /package.json
