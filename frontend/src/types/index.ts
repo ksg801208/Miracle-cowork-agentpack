@@ -71,10 +71,13 @@ export interface AgentRun {
 export interface Document {
   document_id: string;
   project_id?: string;
+  agent_id?: string;
+  area_id?: string;
   title: string;
   document_type?: string;
   content_markdown?: string;
   agent_run_id?: string;
+  created_by?: string;
   created_at?: string;
 }
 

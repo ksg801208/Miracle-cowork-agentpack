@@ -54,8 +54,10 @@ class Document(Base):
     __tablename__ = "documents"
     document_id = Column(String, primary_key=True, default=gen_uuid)
     project_id = Column(String, ForeignKey("projects.id"), nullable=True)
+    agent_id = Column(String(100), nullable=True)
+    area_id = Column(String(100), nullable=True)
     title = Column(String(300), nullable=False)
-    document_type = Column(String(100))
+    document_type = Column(String(100))          # output_type alias
     content_markdown = Column(Text)
     agent_run_id = Column(String, ForeignKey("agent_runs.run_id"), nullable=True)
     created_by = Column(String, ForeignKey("users.id"), nullable=True)

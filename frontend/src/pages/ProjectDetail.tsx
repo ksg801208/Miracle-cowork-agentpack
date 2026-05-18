@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { projectsApi } from '../services/api';
+import { projectsApi, documentsApi } from '../services/api';
 import type { Project, AgentRun, Document } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 import StatusBadge from '../components/StatusBadge';
@@ -138,20 +138,43 @@ export default function ProjectDetail() {
           ) : (
             docs.map(doc => (
               <div key={doc.document_id} className="card">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900 text-sm">{doc.title}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-gray-400">{doc.document_type ?? '문서'}</span>
+                <div className="flex items-start justify-between gap-3">
+                  <button
+                    onClick={() => navigate(`/documents/${doc.document_id}`)}
+                    className="flex-1 text-left min-w-0"
+                  >
+                    <h3 className="font-semibold text-gray-900 text-sm hover:text-blue-600 transition-colors truncate">
+                      {doc.title}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                      {doc.document_type && (
+                        <span className="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">
+                          {doc.document_type}
+                        </span>
+                      )}
                       <span className="text-xs text-gray-400">{formatDate(doc.created_at)}</span>
                     </div>
-                  </div>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(doc.content_markdown ?? '')}
-                    className="btn-secondary text-xs py-1 px-2.5"
-                  >
-                    복사
                   </button>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <button
+                      onClick={() => navigator.clipboard.writeText(doc.content_markdown ?? '')}
+                      className="btn-secondary text-xs py-1 px-2"
+                    >
+                      복사
+                    </button>
+                    <button
+                      onClick={() => documentsApi.download(doc.document_id, doc.title)}
+                      className="btn-secondary text-xs py-1 px-2"
+                    >
+                      ↓ MD
+                    </button>
+                    <button
+                      onClick={() => navigate(`/documents/${doc.document_id}`)}
+                      className="btn-secondary text-xs py-1 px-2"
+                    >
+                      열기
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
