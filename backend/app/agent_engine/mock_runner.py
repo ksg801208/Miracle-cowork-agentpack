@@ -19,7 +19,7 @@ class MockAgentRunner:
             "research_team_composition": self._research_team_composition,
             "wbs_schedule": self._wbs_schedule,
             "final_submission_review": self._final_submission_review,
-            # ── Phase 1-B: 회의/업무관리 7개 Agent (고도화) ──
+            # ── Phase 1-B: 회의/업무관리 7개 Agent ──
             "meeting_minutes": self._meeting_minutes,
             "todo_extraction": self._todo_extraction,
             "work_instruction": self._work_instruction,
@@ -27,10 +27,16 @@ class MockAgentRunner:
             "monthly_report": self._monthly_report,
             "issue_risk_management": self._issue_risk_management,
             "decision_record": self._decision_record,
-            # ── 기타 영역 ──
+            # ── Phase 1-C: 연구개발 프로세스 산출물 8개 Agent ──
             "requirements_definition": self._requirements_definition,
             "function_specification": self._function_specification,
+            "screen_design": self._screen_design,
+            "db_design": self._db_design,
+            "api_specification": self._api_specification,
+            "test_cases": self._test_cases,
             "deliverable_management": self._deliverable_management,
+            "dev_wbs": self._dev_wbs,
+            # ── 기타 영역 ──
             "claude_code_prompt": self._claude_code_prompt,
             "folder_structure_design": self._folder_structure_design,
         }
@@ -1363,149 +1369,1177 @@ class MockAgentRunner:
 *본 업무지시서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 지시자 서명 후 효력이 발생합니다.*
 """
 
+    # ── Phase 1-C: 연구개발 프로세스 산출물 8개 Agent ─────────────────────────
+
     def _requirements_definition(self, inp: dict) -> str:
         project_name = inp.get("project_name", "AI 업무자동화 플랫폼")
+        background = inp.get("project_background", "업무 효율화 및 AI 기반 자동화 필요성 증가")
+        stakeholders = inp.get("stakeholders", "최종사용자(직원), 관리자(팀장), 운영팀, 경영진")
+        func_reqs = inp.get("functional_requirements", "1. Agent 목록 조회\n2. Agent 실행 및 결과 출력\n3. 결과 저장 및 복사")
+        nonfunc_reqs = inp.get("non_functional_requirements", "응답시간 30초 이내, 가용성 99% 이상, JWT 인증")
+        constraints = inp.get("constraints", "MVP 기간 3개월, 오픈소스 기반, 클라우드 배포")
+        today = date.today().strftime("%Y년 %m월 %d일")
+        doc_no = f"RD-REQ-{date.today().strftime('%Y%m%d')}-001"
         return f"""# 요구정의서
 
-**프로젝트명:** {project_name}
-**작성일:** {date.today().strftime('%Y년 %m월 %d일')}  **버전:** v1.0
+**문서번호:** {doc_no}  **프로젝트명:** {project_name}
+**작성일:** {today}  **버전:** v1.0  **작성도구:** Miracle-Cowork AgentPack
 
 ---
 
-## 1. 이해관계자 목록
+## 1. 프로젝트 개요
 
-| 이해관계자 | 역할 | 주요 관심사 |
-|---------|------|-----------|
-| 최종사용자 (직원) | 시스템 주 사용자 | 사용 편의성, 결과 품질 |
-| 관리자 (팀장) | 업무 승인 및 모니터링 | 이력 추적, 보안 |
-| 운영팀 | 시스템 운영 | 안정성, 모니터링 |
-| 경영진 | 의사결정 | ROI, 효율 지표 |
+### 1.1 배경 및 목적
 
----
+{background}
 
-## 2. 기능 요구사항
-
-### FR-001: 영역 및 Agent 탐색
-- **설명**: 사용자는 8개 업무 영역을 탐색하고 57개 Agent를 조회할 수 있다
-- **우선순위**: Must Have
-- **수용 기준**: 영역 클릭 → Agent 목록 2초 이내 표시
-
-### FR-002: Agent 실행
-- **설명**: 사용자는 Agent를 선택하고 입력값을 제출하여 문서를 생성할 수 있다
-- **우선순위**: Must Have
-- **수용 기준**: 입력 제출 후 30초 이내 결과 반환
-
-### FR-003: 프로젝트 관리
-- **설명**: 사용자는 프로젝트를 생성하고 결과를 저장할 수 있다
-- **우선순위**: Must Have
-- **수용 기준**: 프로젝트 생성 후 Agent 실행 결과 즉시 연결 가능
+| 항목 | 내용 |
+|------|------|
+| 프로젝트명 | {project_name} |
+| 작성일 | {today} |
+| 버전 | v1.0 |
+| 문서 상태 | 초안 (Draft) |
 
 ---
 
-## 3. 비기능 요구사항
+## 2. 이해관계자 분석
 
-| 구분 | 요구사항 | 기준값 |
-|-----|---------|-------|
-| 성능 | Agent 응답 시간 | 30초 이내 |
-| 가용성 | 서비스 업타임 | 99% 이상 |
-| 보안 | API 인증 | JWT 기반 (v2) |
-| 확장성 | LLM Provider 교체 | 인터페이스 분리로 무중단 |
-| 유지보수성 | Agent 추가 | agents.json 수정만으로 가능 |
+**이해관계자 목록:**
+{stakeholders}
+
+| 이해관계자 | 역할 | 주요 관심사 | 영향도 | 참여 수준 |
+|---------|------|-----------|-------|---------|
+| 최종사용자 (직원) | 시스템 주 사용자 | 사용 편의성, 결과 품질 | 높음 | 직접 사용 |
+| 관리자 (팀장) | 업무 승인 및 모니터링 | 이력 추적, 보안 | 높음 | 검토 및 승인 |
+| 운영팀 | 시스템 운영 | 안정성, 모니터링 | 중간 | 운영 지원 |
+| 경영진 | 의사결정 | ROI, 효율 지표 | 높음 | 최종 승인 |
 
 ---
-*본 요구정의서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다.*
+
+## 3. 기능 요구사항
+
+{func_reqs}
+
+| 요구ID | 기능명 | 설명 | 우선순위 | 수용 기준 |
+|-------|-------|------|---------|---------|
+| FR-001 | Agent 목록 조회 | 영역별 Agent 카드 목록 표시 | Must Have | 2초 이내 표시 |
+| FR-002 | Agent 실행 | 입력폼 제출 → 문서 자동 생성 | Must Have | 30초 이내 결과 반환 |
+| FR-003 | 결과 저장 | 생성된 문서를 프로젝트에 저장 | Must Have | 저장 후 즉시 조회 가능 |
+| FR-004 | 결과 복사 | 마크다운/텍스트 클립보드 복사 | Should Have | 1클릭 복사 완료 |
+| FR-005 | 프로젝트 관리 | 프로젝트 생성·조회·삭제 | Must Have | CRUD 정상 동작 |
+| FR-006 | 실행 이력 조회 | Agent 실행 이력 목록 표시 | Should Have | 최근 50건 표시 |
+
+---
+
+## 4. 비기능 요구사항
+
+{nonfunc_reqs}
+
+| 구분 | 요구사항 | 목표값 | 측정 방법 |
+|-----|---------|-------|---------|
+| 성능 | Agent 응답 시간 | 30초 이내 | API 응답 시간 모니터링 |
+| 가용성 | 서비스 업타임 | 99% 이상 | 월간 다운타임 집계 |
+| 보안 | API 인증 | JWT Bearer Token | 미인증 접근 차단 확인 |
+| 확장성 | LLM Provider 교체 | 무중단 전환 | 인터페이스 분리 구조 |
+| 유지보수성 | Agent 추가 | 코드 수정 없이 가능 | agents.json 수정만으로 반영 |
+| 사용성 | 학습 시간 | 30분 이내 | 신규 사용자 온보딩 테스트 |
+
+---
+
+## 5. 제약사항
+
+{constraints}
+
+| 구분 | 제약사항 | 내용 |
+|-----|---------|------|
+| 기술 | 언어/프레임워크 | Python/FastAPI, React/TypeScript |
+| 기술 | DB | SQLite (MVP), PostgreSQL (v2) |
+| 일정 | MVP 완성 기한 | 착수 후 3개월 이내 |
+| 예산 | LLM API 비용 | 월 20만원 이내 |
+| 법적 | 데이터 보안 | 개인정보보호법 준수 |
+
+---
+
+## 6. 데이터 요구사항
+
+| 데이터 | 설명 | 보존 기간 | 보안 등급 |
+|-------|------|---------|---------|
+| Agent 실행 이력 | 입력값·출력물·실행 시간 | 1년 | 일반 |
+| 프로젝트 정보 | 프로젝트명·생성일·소유자 | 영구 | 일반 |
+| 사용자 계정 | 이메일·권한 | 탈퇴 시까지 | 민감 |
+
+---
+
+## 7. 가정 및 의존성
+
+| 구분 | 내용 |
+|-----|------|
+| 가정 | LLM API는 외부 서비스로 제공됨 |
+| 가정 | 사용자는 PC/웹 브라우저 환경에서 사용 |
+| 의존성 | Anthropic Claude API (LLM Provider) |
+| 의존성 | SQLite → 추후 PostgreSQL 마이그레이션 계획 |
+
+---
+
+> 💡 **연계 Agent 활용**: **기능명세서 작성** Agent에서 본 요구정의서의 기능 요구사항을 기반으로 상세 명세를 작성하세요.
+
+---
+*본 요구정의서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 이해관계자 검토 후 확정하세요.*
 """
 
     def _function_specification(self, inp: dict) -> str:
         project_name = inp.get("project_name", "AI 업무자동화 플랫폼")
+        feature_list = inp.get("feature_list", "1. 사용자 로그인\n2. Agent 실행\n3. 결과 저장")
+        user_roles = inp.get("user_roles", "일반사용자, 관리자, 운영자")
+        tech_stack = inp.get("tech_stack", "FastAPI, React, SQLite")
+        user_stories = inp.get("user_stories", "")
+        today = date.today().strftime("%Y년 %m월 %d일")
+        doc_no = f"RD-FS-{date.today().strftime('%Y%m%d')}-001"
         return f"""# 기능명세서
 
-**프로젝트명:** {project_name}
-**작성일:** {date.today().strftime('%Y년 %m월 %d일')}  **버전:** v1.0
+**문서번호:** {doc_no}  **프로젝트명:** {project_name}
+**작성일:** {today}  **버전:** v1.0  **작성도구:** Miracle-Cowork AgentPack
 
 ---
 
-## 1. 시스템 아키텍처
+## 1. 시스템 개요
+
+### 1.1 기술 스택
+
+**{tech_stack}**
 
 ```
-[React Frontend] <-> [FastAPI Backend] <-> [SQLite DB]
-                           |
-                    [Agent Engine]
-                           |
-                    [Mock / LLM Provider]
+[사용자 브라우저]
+      │  HTTP/HTTPS
+      ▼
+[React + TypeScript Frontend]  ←→  [Vite Dev / Nginx]
+      │  REST API (JSON)
+      ▼
+[FastAPI Backend (Python)]
+      │
+      ├── [Agent Engine] ──→ [Mock Runner / LLM Provider]
+      │
+      └── [SQLite / PostgreSQL DB]
 ```
+
+### 1.2 사용자 역할
+
+**{user_roles}**
+
+| 역할 | 설명 | 주요 권한 |
+|-----|------|---------|
+| 일반사용자 | Agent 실행 및 결과 조회 | 읽기, Agent 실행, 저장 |
+| 관리자 | 사용자 및 프로젝트 관리 | 일반사용자 권한 + 사용자 관리 |
+| 운영자 | 시스템 설정 및 모니터링 | 전체 권한 |
 
 ---
 
 ## 2. 기능 목록
 
+**개발 대상 기능:**
+{feature_list}
+
+{f"### 유저 스토리{chr(10)}{user_stories}{chr(10)}" if user_stories else ""}
+
+---
+
+## 3. 기능 상세 명세
+
 ### FN-001: 대시보드
+
 | 항목 | 내용 |
 |-----|------|
-| 설명 | 8개 영역 카드 표시, 영역 선택 시 Agent 목록 이동 |
-| API | GET /api/areas |
-| 화면 | /dashboard |
+| 기능 ID | FN-001 |
+| 기능명 | 대시보드 |
+| 설명 | 업무 영역 카드 목록 표시, 영역 클릭 시 Agent 목록 이동 |
+| API | `GET /api/areas` |
+| 화면 경로 | `/dashboard` |
+| 입력값 | 없음 |
+| 출력값 | 영역 목록 (area_id, name_ko, agent_count, description) |
+| 권한 | 모든 사용자 |
+| 예외 처리 | API 오류 시 빈 목록 표시, 오류 메시지 Toast |
 
 ### FN-002: Agent 목록
+
 | 항목 | 내용 |
 |-----|------|
+| 기능 ID | FN-002 |
+| 기능명 | Agent 목록 |
 | 설명 | 특정 영역의 Agent 카드 목록 표시 |
-| API | GET /api/areas/{{area_id}}/agents |
-| 화면 | /areas/{{area_id}} |
+| API | `GET /api/areas/{{area_id}}/agents` |
+| 화면 경로 | `/areas/{{area_id}}` |
+| 입력값 | area_id (Path Parameter) |
+| 출력값 | Agent 목록 (agent_id, name_ko, description, output_type) |
+| 권한 | 모든 사용자 |
+| 예외 처리 | 존재하지 않는 area_id → 404 응답, 오류 페이지 표시 |
 
 ### FN-003: Agent 실행
+
 | 항목 | 내용 |
 |-----|------|
+| 기능 ID | FN-003 |
+| 기능명 | Agent 실행 |
 | 설명 | Agent 입력폼 제출 → 결과 Markdown 렌더링 |
-| API | POST /api/agents/{{agent_id}}/run |
-| 화면 | /agents/{{agent_id}}/run |
+| API | `POST /api/agents/{{agent_id}}/run` |
+| 화면 경로 | `/areas/{{area_id}}/agents/{{agent_id}}` |
+| 입력값 | agent_id (Path), input_payload (Body JSON) |
+| 출력값 | output_text (Markdown), status, run_id |
+| 권한 | 모든 사용자 |
+| 예외 처리 | 필수 입력 미입력 → 프론트 유효성 검사, 서버 오류 → 500 메시지 |
+
+### FN-004: 결과 저장/복사
+
+| 항목 | 내용 |
+|-----|------|
+| 기능 ID | FN-004 |
+| 기능명 | 결과 저장 및 복사 |
+| 설명 | 생성된 문서를 프로젝트에 저장하거나 클립보드에 복사 |
+| API | `POST /api/agent_runs` (저장) |
+| 입력값 | project_id, agent_id, output_text |
+| 출력값 | run_id, created_at |
+| 권한 | 모든 사용자 |
+| 예외 처리 | 클립보드 API 미지원 → 수동 선택 안내 |
+
+### FN-005: 프로젝트 관리
+
+| 항목 | 내용 |
+|-----|------|
+| 기능 ID | FN-005 |
+| 기능명 | 프로젝트 CRUD |
+| 설명 | 프로젝트 생성·목록 조회·상세 조회·삭제 |
+| API | `GET/POST/DELETE /api/projects` |
+| 입력값 | name (생성 시) |
+| 출력값 | project_id, name, created_at, run_count |
+| 권한 | 모든 사용자 |
+| 예외 처리 | 중복 프로젝트명 → 409 응답 |
 
 ---
 
-## 3. 입력 스키마 폼 처리
+## 4. 입력 스키마 폼 렌더링 규칙
 
-| type | 렌더링 | 비고 |
-|-----|-------|------|
-| text | input[type=text] | 단행 |
-| textarea | textarea rows=4 | 장문 |
-| select | select + options | 드롭다운 |
+| type 값 | HTML 렌더링 | 검증 규칙 |
+|--------|-----------|---------|
+| `text` | `<input type="text">` | required 시 빈 값 차단 |
+| `textarea` | `<textarea rows="4">` | required 시 빈 값 차단 |
+| `select` | `<select> + <option>` | options 배열 기반 렌더링 |
 
 ---
-*본 기능명세서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다.*
+
+## 5. 오류 코드 정의
+
+| HTTP 상태 | 코드 | 설명 |
+|---------|------|------|
+| 400 | INVALID_INPUT | 필수 입력값 누락 또는 형식 오류 |
+| 404 | NOT_FOUND | 요청한 리소스 존재하지 않음 |
+| 409 | CONFLICT | 중복 데이터 존재 |
+| 500 | INTERNAL_ERROR | 서버 내부 오류 |
+
+---
+
+> 💡 **연계 Agent 활용**: **화면설계서** Agent에서 본 기능명세서를 기반으로 각 화면의 UI 상세를 설계하세요.
+
+---
+*본 기능명세서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 개발 착수 전 기술리뷰를 완료하세요.*
+"""
+
+    def _screen_design(self, inp: dict) -> str:
+        project_name = inp.get("project_name", "AI 업무자동화 플랫폼")
+        user_types = inp.get("user_types", "일반사용자, 관리자")
+        screen_list = inp.get("screen_list", "1. 대시보드\n2. Agent 목록\n3. Agent 실행\n4. 프로젝트 관리")
+        nav_flow = inp.get("navigation_flow", "로그인 → 대시보드 → Agent 목록 → Agent 실행")
+        today = date.today().strftime("%Y년 %m월 %d일")
+        doc_no = f"RD-SD-{date.today().strftime('%Y%m%d')}-001"
+        return f"""# 화면설계서
+
+**문서번호:** {doc_no}  **프로젝트명:** {project_name}
+**작성일:** {today}  **버전:** v1.0  **작성도구:** Miracle-Cowork AgentPack
+
+---
+
+## 1. 화면 개요
+
+**사용자 유형:** {user_types}
+
+**구현 화면 목록:**
+{screen_list}
+
+---
+
+## 2. 화면 이동 흐름 (Navigation Flow)
+
+{nav_flow}
+
+```
+[로그인 화면]
+      │ 인증 성공
+      ▼
+[대시보드] ─── 영역 카드 클릭 ───▶ [Agent 목록]
+      │                                  │
+      │                          Agent 카드 클릭
+      │                                  ▼
+      │                          [Agent 실행 화면]
+      │                                  │
+      │                          결과 생성 완료
+      │                                  ▼
+      │                          [결과 뷰어] ──▶ [저장/복사]
+      │
+      └── 프로젝트 메뉴 클릭 ───▶ [프로젝트 목록]
+                                        │
+                                프로젝트 클릭
+                                        ▼
+                                [프로젝트 상세 / 실행이력]
+```
+
+---
+
+## 3. 화면 상세 설계
+
+### SCR-001: 대시보드
+
+| 항목 | 내용 |
+|-----|------|
+| 화면 ID | SCR-001 |
+| 화면명 | 대시보드 (Dashboard) |
+| URL | `/dashboard` |
+| 사용자 역할 | 모든 사용자 |
+| 진입 조건 | 로그인 완료 또는 앱 최초 진입 |
+
+**주요 UI 요소:**
+| 요소 | 유형 | 설명 | 비고 |
+|-----|------|------|------|
+| 영역 카드 목록 | Card Grid | 업무 영역(area_id, name_ko, agent_count) | 3열 그리드 |
+| 영역 카드 | Clickable Card | 클릭 시 해당 영역 Agent 목록으로 이동 | hover 효과 |
+| 헤더 네비게이션 | NavBar | 로고, 프로젝트 메뉴, 설정 | 고정 상단 |
+| 총 Agent 수 표시 | Badge | 전체 Agent 수 표시 | 우측 상단 |
+
+**버튼/액션:**
+| 버튼명 | 동작 | 이동 화면 |
+|-------|------|---------|
+| 영역 카드 클릭 | GET /api/areas/{{area_id}}/agents | SCR-002 (Agent 목록) |
+| 프로젝트 메뉴 | - | SCR-005 (프로젝트 목록) |
+
+---
+
+### SCR-002: Agent 목록
+
+| 항목 | 내용 |
+|-----|------|
+| 화면 ID | SCR-002 |
+| 화면명 | Agent 목록 (Agent List) |
+| URL | `/areas/{{area_id}}` |
+| 사용자 역할 | 모든 사용자 |
+| 진입 조건 | 대시보드에서 영역 카드 클릭 |
+
+**주요 UI 요소:**
+| 요소 | 유형 | 설명 | 비고 |
+|-----|------|------|------|
+| 영역 제목 | Heading | 현재 영역 이름 표시 | H1 |
+| Agent 카드 목록 | Card List | agent_id, name_ko, description | 세로 목록 |
+| 뒤로가기 버튼 | Button | 대시보드로 복귀 | 좌측 상단 |
+| Agent 수 Badge | Badge | 현재 영역 Agent 수 | 영역 제목 옆 |
+
+**버튼/액션:**
+| 버튼명 | 동작 | 이동 화면 |
+|-------|------|---------|
+| Agent 카드 클릭 | - | SCR-003 (Agent 실행) |
+| 뒤로가기 | history.back() | SCR-001 (대시보드) |
+
+---
+
+### SCR-003: Agent 실행
+
+| 항목 | 내용 |
+|-----|------|
+| 화면 ID | SCR-003 |
+| 화면명 | Agent 실행 (Agent Run) |
+| URL | `/areas/{{area_id}}/agents/{{agent_id}}` |
+| 사용자 역할 | 모든 사용자 |
+| 진입 조건 | Agent 목록에서 카드 클릭 |
+
+**주요 UI 요소:**
+| 요소 | 유형 | 설명 | 비고 |
+|-----|------|------|------|
+| Agent 이름 | Heading | agent.name_ko 표시 | H2 |
+| Agent 설명 | Paragraph | agent.description | 회색 텍스트 |
+| 입력 폼 | Form | input_schema 기반 동적 렌더링 | text/textarea/select |
+| 실행 버튼 | Primary Button | 폼 제출 → API 호출 | 로딩 스피너 표시 |
+| 결과 뷰어 | Markdown Renderer | output_text 렌더링 | 실행 후 표시 |
+| 복사 버튼 | Icon Button | 결과 클립보드 복사 | 결과 우측 상단 |
+| 저장 버튼 | Secondary Button | 프로젝트에 저장 | 프로젝트 선택 모달 |
+
+**입력 검증:**
+| 필드 | 검증 규칙 | 오류 메시지 |
+|-----|---------|----------|
+| required=true 필드 | 빈 값 불허 | "필수 입력 항목입니다" |
+| 모든 필드 | 최대 4000자 | "최대 4000자까지 입력 가능합니다" |
+
+---
+
+### SCR-004: 프로젝트 목록
+
+| 항목 | 내용 |
+|-----|------|
+| 화면 ID | SCR-004 |
+| 화면명 | 프로젝트 목록 (Project List) |
+| URL | `/projects` |
+| 사용자 역할 | 모든 사용자 |
+
+**주요 UI 요소:**
+| 요소 | 유형 | 설명 | 비고 |
+|-----|------|------|------|
+| 프로젝트 목록 | Table/List | 프로젝트명, 생성일, 실행 수 | 최신순 정렬 |
+| 새 프로젝트 버튼 | Primary Button | 프로젝트 생성 모달 오픈 | 우측 상단 |
+| 삭제 버튼 | Danger Button | 프로젝트 삭제 (확인 다이얼로그) | 각 행 |
+
+---
+
+### SCR-005: 프로젝트 상세
+
+| 항목 | 내용 |
+|-----|------|
+| 화면 ID | SCR-005 |
+| 화면명 | 프로젝트 상세 (Project Detail) |
+| URL | `/projects/{{project_id}}` |
+| 사용자 역할 | 모든 사용자 |
+
+**주요 UI 요소:**
+| 요소 | 유형 | 설명 | 비고 |
+|-----|------|------|------|
+| 프로젝트명 | Heading | 프로젝트 이름 | H2 |
+| 실행 이력 목록 | Table | 실행 Agent명, 실행일시, 출력 미리보기 | 최신순 |
+| 결과 상세 보기 | Modal/Expand | 선택한 실행 이력 전체 결과 표시 | 클릭 시 확장 |
+
+---
+
+## 4. 공통 컴포넌트
+
+| 컴포넌트 | 설명 | 사용 화면 |
+|---------|------|---------|
+| NavBar | 상단 네비게이션 바 | 전체 |
+| StatusBadge | 상태 표시 배지 (완료/진행/예정) | 전체 |
+| LoadingSpinner | 로딩 인디케이터 | SCR-003 |
+| RunResultViewer | Markdown 결과 뷰어 | SCR-003, SCR-005 |
+| AreaCard | 영역 카드 | SCR-001 |
+| AgentCard | Agent 카드 | SCR-002 |
+
+---
+
+> 💡 **연계 Agent 활용**: **DB 설계 초안** Agent에서 각 화면의 데이터 구조를 기반으로 테이블 스키마를 설계하세요.
+
+---
+*본 화면설계서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. UI 리뷰 완료 후 개발에 착수하세요.*
+"""
+
+    def _db_design(self, inp: dict) -> str:
+        project_name = inp.get("project_name", "AI 업무자동화 플랫폼")
+        main_entities = inp.get("main_entities", "사용자(User), 프로젝트(Project), Agent 실행 이력(RunHistory)")
+        relationships = inp.get("relationships", "User - Project: 1:N\nProject - RunHistory: 1:N")
+        db_engine = inp.get("db_engine", "SQLite")
+        data_reqs = inp.get("data_requirements", "예상 데이터 규모 소규모, 주요 조회: 실행 이력 최신순")
+        today = date.today().strftime("%Y년 %m월 %d일")
+        doc_no = f"RD-DB-{date.today().strftime('%Y%m%d')}-001"
+        return f"""# DB 설계 초안
+
+**문서번호:** {doc_no}  **프로젝트명:** {project_name}
+**작성일:** {today}  **버전:** v1.0  **DB 엔진:** {db_engine}
+**작성도구:** Miracle-Cowork AgentPack
+
+---
+
+## 1. 개요
+
+### 1.1 주요 엔티티
+
+{main_entities}
+
+### 1.2 엔티티 관계 (ERD 요약)
+
+{relationships}
+
+```
+[areas] ──1:N──▶ [agents]
+                    │
+                    │ N:1
+                    ▼
+[projects] ──1:N──▶ [agent_runs]
+[users]    ──1:N──▶ [projects]
+```
+
+---
+
+## 2. 데이터 요구사항
+
+{data_reqs}
+
+---
+
+## 3. 테이블 상세 설계
+
+### 3.1 areas (업무 영역)
+
+| 컬럼명 | 타입 | 필수 | 기본값 | 설명 |
+|-------|------|------|-------|------|
+| area_id | VARCHAR(50) | ✅ | - | 영역 고유 ID (PK) |
+| name_ko | VARCHAR(100) | ✅ | - | 영역 한국어명 |
+| name_en | VARCHAR(100) | ✅ | - | 영역 영어명 |
+| description | TEXT | - | NULL | 영역 설명 |
+| icon | VARCHAR(50) | - | NULL | 아이콘 식별자 |
+| sort_order | INTEGER | ✅ | 0 | 정렬 순서 |
+| is_enabled | BOOLEAN | ✅ | TRUE | 활성화 여부 |
+| created_at | TIMESTAMP | ✅ | NOW() | 생성일시 |
+
+**인덱스:**
+- PRIMARY KEY: `area_id`
+
+---
+
+### 3.2 agents (Agent 목록)
+
+| 컬럼명 | 타입 | 필수 | 기본값 | 설명 |
+|-------|------|------|-------|------|
+| agent_id | VARCHAR(100) | ✅ | - | Agent 고유 ID (PK) |
+| area_id | VARCHAR(50) | ✅ | - | 소속 영역 ID (FK → areas) |
+| name_ko | VARCHAR(200) | ✅ | - | Agent 한국어명 |
+| name_en | VARCHAR(200) | ✅ | - | Agent 영어명 |
+| description | TEXT | - | NULL | Agent 설명 |
+| output_type | VARCHAR(20) | ✅ | 'document' | 출력 유형 (document/table/checklist/prompt) |
+| priority | INTEGER | ✅ | 1 | 영역 내 정렬 순서 |
+| is_enabled | BOOLEAN | ✅ | TRUE | 활성화 여부 |
+| input_schema | JSON | - | NULL | 입력 폼 스키마 |
+| created_at | TIMESTAMP | ✅ | NOW() | 생성일시 |
+
+**인덱스:**
+- PRIMARY KEY: `agent_id`
+- INDEX: `area_id` (영역별 Agent 조회)
+
+---
+
+### 3.3 projects (프로젝트)
+
+| 컬럼명 | 타입 | 필수 | 기본값 | 설명 |
+|-------|------|------|-------|------|
+| id | INTEGER | ✅ | AUTO | 프로젝트 ID (PK, Auto Increment) |
+| name | VARCHAR(200) | ✅ | - | 프로젝트명 |
+| description | TEXT | - | NULL | 프로젝트 설명 |
+| status | VARCHAR(20) | ✅ | 'active' | 상태 (active/archived) |
+| created_at | TIMESTAMP | ✅ | NOW() | 생성일시 |
+| updated_at | TIMESTAMP | ✅ | NOW() | 최종 수정일시 |
+
+**인덱스:**
+- PRIMARY KEY: `id`
+- INDEX: `created_at DESC` (최신순 조회)
+
+---
+
+### 3.4 agent_runs (Agent 실행 이력)
+
+| 컬럼명 | 타입 | 필수 | 기본값 | 설명 |
+|-------|------|------|-------|------|
+| id | INTEGER | ✅ | AUTO | 실행 이력 ID (PK) |
+| project_id | INTEGER | - | NULL | 연결 프로젝트 ID (FK → projects) |
+| agent_id | VARCHAR(100) | ✅ | - | 실행 Agent ID (FK → agents) |
+| input_payload | JSON | - | NULL | 입력값 (JSON) |
+| output_text | TEXT | - | NULL | 생성 결과 (Markdown) |
+| status | VARCHAR(20) | ✅ | 'pending' | 상태 (pending/completed/failed) |
+| run_duration_ms | INTEGER | - | NULL | 실행 소요 시간 (ms) |
+| created_at | TIMESTAMP | ✅ | NOW() | 실행일시 |
+
+**인덱스:**
+- PRIMARY KEY: `id`
+- INDEX: `project_id` (프로젝트별 이력 조회)
+- INDEX: `agent_id` (Agent별 이력 조회)
+- INDEX: `created_at DESC` (최신순 조회)
+
+---
+
+### 3.5 tasks (업무/태스크)
+
+| 컬럼명 | 타입 | 필수 | 기본값 | 설명 |
+|-------|------|------|-------|------|
+| id | INTEGER | ✅ | AUTO | 태스크 ID (PK) |
+| project_id | INTEGER | ✅ | - | 프로젝트 ID (FK → projects) |
+| title | VARCHAR(500) | ✅ | - | 태스크 제목 |
+| description | TEXT | - | NULL | 상세 내용 |
+| status | VARCHAR(20) | ✅ | 'todo' | 상태 (todo/in_progress/done) |
+| priority | VARCHAR(10) | ✅ | 'medium' | 우선순위 (high/medium/low) |
+| due_date | DATE | - | NULL | 완료 기한 |
+| assignee | VARCHAR(100) | - | NULL | 담당자 |
+| created_at | TIMESTAMP | ✅ | NOW() | 생성일시 |
+
+**인덱스:**
+- PRIMARY KEY: `id`
+- INDEX: `project_id, status` (프로젝트별 상태 조회)
+
+---
+
+## 4. 관계 제약 (Foreign Keys)
+
+| 테이블 | 컬럼 | 참조 | ON DELETE |
+|-------|------|------|---------|
+| agents | area_id | areas(area_id) | RESTRICT |
+| agent_runs | project_id | projects(id) | SET NULL |
+| agent_runs | agent_id | agents(agent_id) | RESTRICT |
+| tasks | project_id | projects(id) | CASCADE |
+
+---
+
+## 5. 마이그레이션 계획
+
+| 단계 | 내용 | 시점 |
+|-----|------|------|
+| MVP | SQLite 사용 | 현재 |
+| v2.0 | PostgreSQL 전환 | 사용자 100명 초과 시 |
+| v2.0 | 인덱스 최적화 | 데이터 1만 건 초과 시 |
+| v3.0 | 읽기 전용 레플리카 추가 | 트래픽 급증 시 |
+
+---
+
+> 💡 **연계 Agent 활용**: **API 명세서** Agent에서 본 DB 설계를 기반으로 REST API 엔드포인트를 정의하세요.
+
+---
+*본 DB 설계 초안은 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. DBA 검토 후 확정하세요.*
+"""
+
+    def _api_specification(self, inp: dict) -> str:
+        project_name = inp.get("project_name", "AI 업무자동화 플랫폼")
+        api_domain = inp.get("api_domain", "Agent 실행 API")
+        main_resources = inp.get("main_resources", "/api/areas, /api/agents/{id}/run, /api/projects")
+        auth_method = inp.get("authentication_method", "JWT Bearer Token")
+        base_url = inp.get("base_url", "http://localhost:8000")
+        today = date.today().strftime("%Y년 %m월 %d일")
+        doc_no = f"RD-API-{date.today().strftime('%Y%m%d')}-001"
+        return f"""# API 명세서
+
+**문서번호:** {doc_no}  **프로젝트명:** {project_name}
+**작성일:** {today}  **버전:** v1.0  **작성도구:** Miracle-Cowork AgentPack
+
+---
+
+## 1. 개요
+
+| 항목 | 내용 |
+|------|------|
+| API 도메인/서비스 | {api_domain} |
+| Base URL | `{base_url}` |
+| 인증 방식 | {auth_method} |
+| 응답 형식 | JSON |
+| API 버전 | v1 |
+| 문서 형식 | OpenAPI 3.0 호환 |
+
+**주요 리소스:**
+{main_resources}
+
+---
+
+## 2. 인증
+
+### {auth_method}
+
+```http
+Authorization: Bearer <token>
+```
+
+| 항목 | 내용 |
+|------|------|
+| 방식 | {auth_method} |
+| 토큰 유효기간 | 24시간 |
+| 갱신 방법 | Refresh Token 사용 |
+| 미인증 시 응답 | 401 Unauthorized |
+
+---
+
+## 3. 공통 응답 형식
+
+### 성공 응답
+```json
+{{
+  "data": {{ ... }},
+  "status": "success"
+}}
+```
+
+### 오류 응답
+```json
+{{
+  "detail": "오류 메시지",
+  "status": "error",
+  "code": "ERROR_CODE"
+}}
+```
+
+### 공통 오류 코드
+
+| HTTP 상태 | 코드 | 설명 |
+|---------|------|------|
+| 400 | INVALID_INPUT | 요청 파라미터 오류 |
+| 401 | UNAUTHORIZED | 인증 실패 또는 토큰 만료 |
+| 403 | FORBIDDEN | 권한 없음 |
+| 404 | NOT_FOUND | 리소스 존재하지 않음 |
+| 409 | CONFLICT | 중복 데이터 |
+| 500 | INTERNAL_ERROR | 서버 내부 오류 |
+
+---
+
+## 4. API 엔드포인트 목록
+
+### 4.1 영역 (Areas)
+
+#### GET /api/areas
+**설명:** 전체 업무 영역 목록 조회
+
+| 항목 | 내용 |
+|------|------|
+| 메서드 | GET |
+| URL | `{base_url}/api/areas` |
+| 인증 | 불필요 |
+| 요청 파라미터 | 없음 |
+
+**응답 예시:**
+```json
+[
+  {{
+    "area_id": "government_rd",
+    "name_ko": "정부 R&D 지원",
+    "name_en": "Government R&D Support",
+    "agent_count": 10,
+    "description": "정부 R&D 공고 분석 및 제안서 작성"
+  }}
+]
+```
+
+---
+
+#### GET /api/areas/{{area_id}}/agents
+**설명:** 특정 영역의 Agent 목록 조회
+
+| 항목 | 내용 |
+|------|------|
+| 메서드 | GET |
+| URL | `{base_url}/api/areas/{{area_id}}/agents` |
+| 인증 | 불필요 |
+| Path Parameter | area_id: 영역 ID |
+
+**응답 예시:**
+```json
+[
+  {{
+    "agent_id": "requirements_definition",
+    "name_ko": "요구정의서 작성",
+    "description": "...",
+    "output_type": "document",
+    "input_schema": {{ ... }}
+  }}
+]
+```
+
+**오류 응답:**
+- `404` — 존재하지 않는 area_id
+
+---
+
+### 4.2 Agent 실행 (Agent Runs)
+
+#### POST /api/agents/{{agent_id}}/run
+**설명:** Agent 실행 — 입력값을 받아 문서 생성
+
+| 항목 | 내용 |
+|------|------|
+| 메서드 | POST |
+| URL | `{base_url}/api/agents/{{agent_id}}/run` |
+| 인증 | 선택 |
+| Content-Type | application/json |
+
+**요청 Body:**
+```json
+{{
+  "input_payload": {{
+    "project_name": "AI 업무자동화 플랫폼",
+    "feature_list": "1. 로그인\\n2. Agent 실행"
+  }},
+  "project_id": 1
+}}
+```
+
+**응답 예시:**
+```json
+{{
+  "run_id": 42,
+  "agent_id": "requirements_definition",
+  "output_text": "# 요구정의서\\n\\n...",
+  "status": "completed",
+  "run_duration_ms": 1250,
+  "created_at": "2026-05-18T10:30:00"
+}}
+```
+
+**오류 응답:**
+- `400` — 필수 입력값 누락
+- `404` — 존재하지 않는 agent_id
+- `500` — Agent 실행 실패
+
+---
+
+### 4.3 프로젝트 (Projects)
+
+#### GET /api/projects
+**설명:** 프로젝트 목록 조회
+
+| 항목 | 내용 |
+|------|------|
+| 메서드 | GET |
+| URL | `{base_url}/api/projects` |
+| 응답 | 프로젝트 배열 (최신순) |
+
+#### POST /api/projects
+**설명:** 프로젝트 생성
+
+**요청 Body:**
+```json
+{{ "name": "AgentPack 개발 프로젝트", "description": "Phase 1-C 산출물 관리" }}
+```
+
+**응답:** `201 Created` + 생성된 프로젝트 객체
+
+#### GET /api/projects/{{project_id}}
+**설명:** 프로젝트 상세 및 실행 이력 조회
+
+#### DELETE /api/projects/{{project_id}}
+**설명:** 프로젝트 삭제
+
+**응답:** `204 No Content`
+
+---
+
+### 4.4 실행 이력 (Agent Runs)
+
+#### GET /api/agent_runs
+**설명:** Agent 실행 이력 목록 조회
+
+| 항목 | 내용 |
+|------|------|
+| Query Parameter | project_id (선택), agent_id (선택), limit (기본 50) |
+| 응답 | 실행 이력 배열 (최신순) |
+
+#### GET /api/agent_runs/{{run_id}}
+**설명:** 특정 실행 이력 상세 조회 (output_text 전체 포함)
+
+---
+
+## 5. API 사용 예시 (cURL)
+
+```bash
+# 영역 목록 조회
+curl {base_url}/api/areas
+
+# Agent 실행
+curl -X POST {base_url}/api/agents/requirements_definition/run \\
+  -H "Content-Type: application/json" \\
+  -d '{{"input_payload": {{"project_name": "테스트 프로젝트"}}}}'
+
+# 프로젝트 생성
+curl -X POST {base_url}/api/projects \\
+  -H "Content-Type: application/json" \\
+  -d '{{"name": "신규 프로젝트"}}'
+```
+
+---
+
+> 💡 **연계 Agent 활용**: **테스트케이스** Agent에서 본 API 명세서를 기반으로 API 테스트 케이스를 작성하세요.
+
+---
+*본 API 명세서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. Swagger/OpenAPI 도구로 자동 문서화를 병행하세요.*
+"""
+
+    def _test_cases(self, inp: dict) -> str:
+        feature_name = inp.get("feature_name", "Agent 실행 기능")
+        test_scenarios = inp.get("test_scenarios", "1. 정상 입력 시 결과 출력\n2. 필수 필드 미입력 시 오류\n3. 네트워크 오류 시 처리")
+        test_type = inp.get("test_type", "기능 테스트")
+        expected_behaviors = inp.get("expected_behaviors", "")
+        today = date.today().strftime("%Y년 %m월 %d일")
+        doc_no = f"RD-TC-{date.today().strftime('%Y%m%d')}-001"
+        return f"""# 테스트케이스 명세서
+
+**문서번호:** {doc_no}  **테스트 대상:** {feature_name}
+**작성일:** {today}  **테스트 유형:** {test_type}  **버전:** v1.0
+**작성도구:** Miracle-Cowork AgentPack
+
+---
+
+## 1. 테스트 개요
+
+| 항목 | 내용 |
+|------|------|
+| 테스트 대상 기능/모듈 | {feature_name} |
+| 테스트 유형 | {test_type} |
+| 작성일 | {today} |
+| 총 테스트케이스 수 | 12개 (아래 참조) |
+| 합격 기준 | 전체 케이스 90% 이상 Pass |
+
+---
+
+## 2. 테스트 시나리오
+
+{test_scenarios}
+
+{f"**기대 동작:**{chr(10)}{expected_behaviors}{chr(10)}" if expected_behaviors else ""}
+
+---
+
+## 3. 테스트케이스 목록
+
+### 3.1 정상 케이스 (Happy Path)
+
+| TC ID | 테스트 항목 | 사전 조건 | 테스트 절차 | 입력 데이터 | 기대 결과 | 판정 기준 | 담당자 | 결과 |
+|-------|----------|---------|-----------|---------|---------|---------|-------|------|
+| TC-001 | 필수 입력값 정상 제출 | 앱 정상 실행 | 1. Agent 선택<br>2. 필수 필드 입력<br>3. 실행 버튼 클릭 | 유효한 입력값 | 문서 생성 완료, 결과 표시 | HTTP 200, output_text 비어있지 않음 | 김연구 | - |
+| TC-002 | 선택 입력값 포함 제출 | TC-001 통과 | 1. 선택 필드 포함 전체 입력<br>2. 실행 버튼 클릭 | 모든 필드 입력 | 입력값이 결과에 반영됨 | 출력 문서에 입력값 포함 확인 | 김연구 | - |
+| TC-003 | 결과 복사 기능 | 결과 생성 완료 | 1. 복사 버튼 클릭 | - | 클립보드에 결과 복사 | Toast "복사 완료" 표시 | 김연구 | - |
+| TC-004 | 결과 저장 기능 | 프로젝트 1개 이상 존재 | 1. 저장 버튼 클릭<br>2. 프로젝트 선택 | project_id | 저장 성공 메시지 | DB에 agent_run 레코드 생성 확인 | 김연구 | - |
+| TC-005 | 저장된 결과 재조회 | TC-004 통과 | 1. 프로젝트 상세 이동<br>2. 실행 이력 클릭 | - | 저장된 결과 표시 | output_text 동일 확인 | 김연구 | - |
+
+---
+
+### 3.2 예외 케이스 (Edge Cases)
+
+| TC ID | 테스트 항목 | 사전 조건 | 테스트 절차 | 입력 데이터 | 기대 결과 | 판정 기준 | 담당자 | 결과 |
+|-------|----------|---------|-----------|---------|---------|---------|-------|------|
+| TC-006 | 필수 입력 미입력 | 앱 정상 실행 | 1. 필수 필드 빈 상태로 실행 클릭 | 빈 값 | 유효성 오류 메시지 표시 | API 호출 없이 프론트 검증 동작 | 김연구 | - |
+| TC-007 | 최대 길이 초과 입력 | 앱 정상 실행 | 1. textarea에 4001자 입력<br>2. 실행 클릭 | 4001자 문자열 | 오류 메시지 또는 트림 처리 | 4000자 이하로 제한됨 | 김연구 | - |
+| TC-008 | 특수문자 입력 | 앱 정상 실행 | 1. 특수문자 포함 입력<br>2. 실행 클릭 | `<script>alert(1)</script>` | XSS 방지, 문자열로 표시 | 스크립트 실행 안 됨 | 이개발 | - |
+| TC-009 | 존재하지 않는 Agent ID | - | 1. 잘못된 agent_id로 API 직접 호출 | 없는 agent_id | 404 응답 | HTTP 404, 오류 메시지 | 이개발 | - |
+| TC-010 | 서버 응답 지연 | 백엔드 지연 설정 | 1. 실행 버튼 클릭 후 5초 대기 | 정상 입력값 | 로딩 스피너 표시 | 버튼 비활성화 + 스피너 동작 | 김연구 | - |
+
+---
+
+### 3.3 경계값 테스트 (Boundary Tests)
+
+| TC ID | 테스트 항목 | 사전 조건 | 테스트 절차 | 입력 데이터 | 기대 결과 | 판정 기준 | 담당자 | 결과 |
+|-------|----------|---------|-----------|---------|---------|---------|-------|------|
+| TC-011 | 최소 입력 (1자) | 앱 정상 실행 | 1. 필수 필드에 1자 입력<br>2. 실행 클릭 | 'A' | 실행 성공 또는 오류 | 1자도 유효한 경우 처리 확인 | 김연구 | - |
+| TC-012 | 최대 입력 (4000자) | 앱 정상 실행 | 1. 필수 필드에 4000자 입력<br>2. 실행 클릭 | 4000자 문자열 | 실행 성공 | 출력 문서 정상 생성 | 김연구 | - |
+
+---
+
+## 4. 테스트 환경
+
+| 구분 | 내용 |
+|-----|------|
+| 테스트 환경 | 로컬 개발 환경 (localhost:3000, localhost:8000) |
+| 브라우저 | Chrome 최신 버전, Safari 최신 버전 |
+| DB | SQLite (테스트 DB 별도 사용) |
+| Mock 데이터 | agents.json 기반 57종 Agent |
+
+---
+
+## 5. 테스트 결과 요약 (작성 후 업데이트)
+
+| 구분 | 전체 | Pass | Fail | Skip | 통과율 |
+|-----|------|------|------|------|-------|
+| 정상 케이스 | 5 | - | - | - | - |
+| 예외 케이스 | 5 | - | - | - | - |
+| 경계값 테스트 | 2 | - | - | - | - |
+| **합계** | **12** | **-** | **-** | **-** | **-** |
+
+---
+
+> 💡 **연계 Agent 활용**: **산출물 관리표** Agent에서 테스트케이스 문서를 산출물로 등록하고 QA 완료 시 상태를 업데이트하세요.
+
+---
+*본 테스트케이스는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. QA팀 검토 후 테스트를 수행하세요.*
 """
 
     def _deliverable_management(self, inp: dict) -> str:
         project_name = inp.get("project_name", "AI 업무자동화 플랫폼")
+        project_phases = inp.get("project_phases", "분석, 설계, 개발, 테스트, 배포")
+        deliverable_list = inp.get("deliverable_list", "분석: 요구정의서\n설계: 기능명세서, 화면설계서, DB설계서\n개발: 소스코드\n테스트: 테스트케이스\n배포: 배포 가이드")
+        responsible_persons = inp.get("responsible_persons", "홍길동(PM), 김연구(기획), 이개발(개발), 박QA(QA)")
+        today = date.today().strftime("%Y년 %m월 %d일")
+        doc_no = f"RD-DM-{date.today().strftime('%Y%m%d')}-001"
         return f"""# 산출물 관리표
 
-**프로젝트명:** {project_name}
-**작성일:** {date.today().strftime('%Y년 %m월 %d일')}
+**문서번호:** {doc_no}  **프로젝트명:** {project_name}
+**작성일:** {today}  **버전:** v1.0  **작성도구:** Miracle-Cowork AgentPack
 
 ---
 
-| 단계 | 산출물명 | 유형 | 담당자 | 완료기준 | 상태 | 비고 |
-|-----|---------|------|-------|---------|------|------|
-| 분석 | 요구정의서 | 문서 | 김연구 | 이해관계자 검토 완료 | ✅ 완료 | v1.0 |
-| 설계 | 시스템 아키텍처 | 다이어그램 | 이개발 | 기술리뷰 통과 | ✅ 완료 | Draw.io |
-| 설계 | API 명세서 | 문서 | 이개발 | Swagger 자동화 | ⏳ 진행 | 85% |
-| 개발 | 백엔드 소스코드 | 코드 | 이개발 | 단위 테스트 통과 | ⏳ 진행 | 80% |
-| 개발 | 프론트엔드 소스코드 | 코드 | 박디자인 | UI 리뷰 통과 | ⏳ 진행 | 60% |
-| 개발 | Agent Mock Runner | 코드 | 이개발 | 57종 Agent 검증 | ✅ 완료 | |
-| 테스트 | 테스트케이스 | 문서 | 김연구 | QA팀 승인 | 🗓️ 예정 | |
-| 배포 | 배포 가이드 | 문서 | 이개발 | 운영팀 검토 | 🗓️ 예정 | |
+## 1. 프로젝트 개요
+
+| 항목 | 내용 |
+|------|------|
+| 프로젝트명 | {project_name} |
+| 프로젝트 단계 | {project_phases} |
+| 팀원 구성 | {responsible_persons} |
+| 작성일 | {today} |
 
 ---
 
-## 진행 현황
+## 2. 산출물 목록
 
-| 상태 | 건수 | 비율 |
-|-----|------|------|
-| 완료 | 3 | 38% |
-| 진행 중 | 3 | 38% |
-| 예정 | 2 | 24% |
+**등록 산출물:**
+{deliverable_list}
 
 ---
-*본 관리표는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다.*
+
+## 3. 산출물 상세 관리표
+
+| No | 단계 | 산출물명 | 유형 | 작성자 | 검토자 | 완료 기준 | 제출 시점 | 상태 | 버전 | 비고 |
+|----|-----|---------|------|-------|-------|---------|---------|------|------|------|
+| 1 | 분석 | 요구정의서 | 문서 | 김연구 | 홍길동 | 이해관계자 서명 완료 | 분석 단계 종료 시 | ✅ 완료 | v1.0 | 고객 승인 완료 |
+| 2 | 분석 | 이해관계자 분석서 | 문서 | 김연구 | 홍길동 | PM 검토 완료 | 분석 단계 종료 시 | ✅ 완료 | v1.0 | |
+| 3 | 설계 | 기능명세서 | 문서 | 이개발 | 김연구 | 기술리뷰 통과 | 설계 단계 종료 시 | ✅ 완료 | v1.0 | |
+| 4 | 설계 | 화면설계서 | 문서 | 이개발 | 박QA | UI 리뷰 완료 | 설계 단계 종료 시 | ⏳ 진행 | v0.8 | 80% 완료 |
+| 5 | 설계 | DB 설계서 | 문서 | 이개발 | 이개발 | DBA 검토 완료 | 설계 단계 종료 시 | ⏳ 진행 | v0.9 | 검토 중 |
+| 6 | 설계 | API 명세서 | 문서 | 이개발 | 이개발 | Swagger 연동 완료 | 개발 착수 전 | ⏳ 진행 | v0.7 | Swagger 작업 중 |
+| 7 | 개발 | 백엔드 소스코드 | 코드 | 이개발 | 이개발 | 단위 테스트 Pass | 개발 단계 종료 시 | ⏳ 진행 | - | Git 관리 |
+| 8 | 개발 | 프론트엔드 소스코드 | 코드 | 이개발 | 박QA | UI 리뷰 Pass | 개발 단계 종료 시 | ⏳ 진행 | - | Git 관리 |
+| 9 | 개발 | Agent Mock Runner | 코드 | 이개발 | 이개발 | 57종 Agent 실행 검증 | 개발 단계 | ✅ 완료 | v1.3 | Phase 1-C 완료 |
+| 10 | 테스트 | 테스트케이스 명세서 | 문서 | 박QA | 김연구 | QA팀 승인 | 테스트 단계 착수 시 | 🗓️ 예정 | - | |
+| 11 | 테스트 | 테스트 결과 보고서 | 문서 | 박QA | 홍길동 | Pass율 90% 이상 | 테스트 단계 종료 시 | 🗓️ 예정 | - | |
+| 12 | 배포 | 배포 가이드 | 문서 | 이개발 | 운영팀 | 운영팀 검토 완료 | 배포 전 | 🗓️ 예정 | - | |
+| 13 | 배포 | 운영 매뉴얼 | 문서 | 이개발 | 운영팀 | 운영팀 서명 | 배포 후 | 🗓️ 예정 | - | |
+
+---
+
+## 4. 단계별 산출물 현황
+
+| 단계 | 산출물 수 | 완료 | 진행 | 예정 | 완료율 |
+|-----|---------|------|------|------|-------|
+| 분석 | 2 | 2 | 0 | 0 | 100% |
+| 설계 | 4 | 1 | 3 | 0 | 25% |
+| 개발 | 3 | 1 | 2 | 0 | 33% |
+| 테스트 | 2 | 0 | 0 | 2 | 0% |
+| 배포 | 2 | 0 | 0 | 2 | 0% |
+| **합계** | **13** | **4** | **5** | **4** | **31%** |
+
+---
+
+## 5. 산출물 품질 체크리스트
+
+| 체크 항목 | 기준 | 확인자 |
+|---------|------|-------|
+| 문서 표준 양식 준수 | 회사 표준 템플릿 사용 | PM |
+| 버전 관리 | Git 또는 문서 버전 명시 | 작성자 |
+| 검토자 서명 | 검토자 확인 후 상태 변경 | 검토자 |
+| 이해관계자 배포 | 완료 산출물 관계자 공유 | PM |
+| 보안 분류 | 내부/기밀 분류 명시 | 작성자 |
+
+---
+
+> 💡 **연계 Agent 활용**: **개발 WBS** Agent에서 각 산출물의 완료 일정을 WBS에 반영하여 일정을 관리하세요.
+
+---
+*본 산출물 관리표는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 주간 업데이트하여 최신 상태를 유지하세요.*
+"""
+
+    def _dev_wbs(self, inp: dict) -> str:
+        project_name = inp.get("project_name", "AI 업무자동화 플랫폼")
+        start_date = inp.get("start_date", "2024.07.01")
+        end_date = inp.get("end_date", "2024.12.31")
+        dev_phases = inp.get("dev_phases", "1. 분석·설계 (4주)\n2. 핵심 기능 개발 (8주)\n3. 통합 테스트 (3주)\n4. 배포·안정화 (1주)")
+        team_members = inp.get("team_members", "PM 1명, FE 2명, BE 2명, QA 1명")
+        risks = inp.get("risks", "핵심 인력 이탈, API 의존성, 일정 지연 가능성")
+        today = date.today().strftime("%Y년 %m월 %d일")
+        doc_no = f"RD-WBS-{date.today().strftime('%Y%m%d')}-001"
+        return f"""# 개발 WBS (Work Breakdown Structure)
+
+**문서번호:** {doc_no}  **프로젝트명:** {project_name}
+**작성일:** {today}  **버전:** v1.0  **작성도구:** Miracle-Cowork AgentPack
+
+---
+
+## 1. 프로젝트 개요
+
+| 항목 | 내용 |
+|------|------|
+| 프로젝트명 | {project_name} |
+| 시작일 | {start_date} |
+| 종료일 | {end_date} |
+| 팀 구성 | {team_members} |
+
+---
+
+## 2. 개발 단계 및 주요 작업
+
+{dev_phases}
+
+---
+
+## 3. WBS 상세표
+
+| WBS ID | 작업 분류 | 세부 작업 | 담당자 | 시작일 | 종료일 | 기간 | 산출물 | 선행 작업 | 진행률 |
+|--------|---------|---------|-------|-------|-------|-----|-------|---------|-------|
+| 1.0 | **분석 · 설계** | | | {start_date} | | 4주 | | | |
+| 1.1 | 분석 | 요구사항 수집 및 분석 | 김연구/홍길동 | W+0 | W+1 | 2주 | 요구정의서 | - | ✅ 100% |
+| 1.2 | 분석 | 이해관계자 분석 | 김연구 | W+0 | W+1 | 1주 | 이해관계자 분석서 | - | ✅ 100% |
+| 1.3 | 설계 | 시스템 아키텍처 설계 | 이개발 | W+1 | W+2 | 1주 | 아키텍처 다이어그램 | 1.1 | ✅ 100% |
+| 1.4 | 설계 | 기능명세서 작성 | 이개발 | W+2 | W+3 | 1주 | 기능명세서 | 1.1 | ✅ 100% |
+| 1.5 | 설계 | DB 설계 | 이개발 | W+2 | W+3 | 1주 | DB 설계서 | 1.3 | ⏳ 90% |
+| 1.6 | 설계 | API 명세서 작성 | 이개발 | W+2 | W+3 | 1주 | API 명세서 | 1.4 | ⏳ 70% |
+| 1.7 | 설계 | 화면설계서 작성 | 이개발 | W+3 | W+4 | 1주 | 화면설계서 | 1.4 | ⏳ 80% |
+| 2.0 | **핵심 기능 개발** | | | W+4 | | 8주 | | | |
+| 2.1 | 백엔드 | FastAPI 프로젝트 구조 생성 | 이개발 | W+4 | W+5 | 1주 | 프로젝트 골격 | 1.3 | ✅ 100% |
+| 2.2 | 백엔드 | DB 모델 및 스키마 구현 | 이개발 | W+4 | W+5 | 1주 | models.py, schemas.py | 1.5 | ✅ 100% |
+| 2.3 | 백엔드 | Areas API 구현 | 이개발 | W+5 | W+6 | 1주 | /api/areas 엔드포인트 | 2.2 | ✅ 100% |
+| 2.4 | 백엔드 | Agent Engine 구현 | 이개발 | W+5 | W+7 | 2주 | mock_runner.py | 2.3 | ⏳ 95% |
+| 2.5 | 백엔드 | Projects API 구현 | 이개발 | W+6 | W+7 | 1주 | /api/projects | 2.2 | ✅ 100% |
+| 2.6 | 백엔드 | Agent Runs API 구현 | 이개발 | W+7 | W+8 | 1주 | /api/agent_runs | 2.4 | ⏳ 85% |
+| 2.7 | 프론트엔드 | React 프로젝트 구조 생성 | 이개발 | W+4 | W+5 | 1주 | Vite + React 골격 | 1.3 | ✅ 100% |
+| 2.8 | 프론트엔드 | 대시보드 화면 구현 | 이개발 | W+5 | W+6 | 1주 | Dashboard.tsx | 2.7 | ✅ 100% |
+| 2.9 | 프론트엔드 | Agent 목록/실행 화면 구현 | 이개발 | W+6 | W+8 | 2주 | AreaDetail.tsx 등 | 2.8 | ⏳ 80% |
+| 2.10 | 프론트엔드 | 프로젝트 관리 화면 구현 | 이개발 | W+8 | W+9 | 1주 | ProjectList.tsx 등 | 2.9 | ⏳ 60% |
+| 2.11 | 프론트엔드 | 결과 저장/복사 기능 구현 | 이개발 | W+9 | W+10 | 1주 | RunResultViewer.tsx | 2.10 | ⏳ 70% |
+| 3.0 | **통합 테스트** | | | W+12 | | 3주 | | | |
+| 3.1 | 테스트 | 테스트케이스 작성 | 박QA | W+12 | W+13 | 1주 | 테스트케이스 명세서 | 2.11 | 🗓️ 예정 |
+| 3.2 | 테스트 | 기능 테스트 수행 | 박QA | W+13 | W+14 | 1주 | 테스트 결과 보고서 | 3.1 | 🗓️ 예정 |
+| 3.3 | 테스트 | 결함 수정 및 재테스트 | 이개발/박QA | W+14 | W+15 | 1주 | 수정된 소스코드 | 3.2 | 🗓️ 예정 |
+| 4.0 | **배포 · 안정화** | | | W+15 | {end_date} | 1주 | | | |
+| 4.1 | 배포 | 배포 환경 구성 | 이개발 | W+15 | W+15 | 3일 | 배포 가이드 | 3.3 | 🗓️ 예정 |
+| 4.2 | 배포 | 운영 배포 및 검증 | 이개발/운영팀 | W+15 | W+16 | 2일 | 배포 완료 보고서 | 4.1 | 🗓️ 예정 |
+| 4.3 | 배포 | 운영 매뉴얼 작성 | 이개발 | W+15 | W+16 | 2일 | 운영 매뉴얼 | 4.2 | 🗓️ 예정 |
+
+---
+
+## 4. 진행 현황 요약
+
+| 단계 | 작업 수 | 완료 | 진행 | 예정 | 완료율 |
+|-----|---------|------|------|------|-------|
+| 1.0 분석·설계 | 7 | 4 | 3 | 0 | 57% |
+| 2.0 핵심 개발 | 11 | 5 | 6 | 0 | 45% |
+| 3.0 통합 테스트 | 3 | 0 | 0 | 3 | 0% |
+| 4.0 배포·안정화 | 3 | 0 | 0 | 3 | 0% |
+| **합계** | **24** | **9** | **9** | **6** | **38%** |
+
+---
+
+## 5. 마일스톤
+
+| 마일스톤 | 목표일 | 내용 | 상태 |
+|---------|-------|------|------|
+| M1: 분석·설계 완료 | W+4 | 요구정의서·기능명세서·설계서 완료 | ⏳ 진행 |
+| M2: 백엔드 API 완료 | W+8 | 모든 API 엔드포인트 구현 완료 | ⏳ 진행 |
+| M3: 프론트엔드 완료 | W+11 | 모든 화면 구현 및 E2E 연동 완료 | 🗓️ 예정 |
+| M4: QA 완료 | W+15 | Pass율 90% 이상 달성 | 🗓️ 예정 |
+| M5: 프로덕션 배포 | {end_date} | 운영 환경 배포 완료 | 🗓️ 예정 |
+
+---
+
+## 6. 리스크 관리
+
+{risks}
+
+| No | 리스크명 | 영향도 | 발생 가능성 | 대응 방안 | 담당자 |
+|----|---------|-------|----------|---------|-------|
+| R-01 | 핵심 인력 이탈 | 높음 | 낮음 | 업무 공동 숙지, 문서화 강화 | 홍길동 |
+| R-02 | LLM API 의존성 | 중간 | 중간 | Mock 모드 유지, 대체 Provider 준비 | 이개발 |
+| R-03 | 일정 지연 | 높음 | 중간 | 2주 버퍼 확보, 주간 진척 점검 | 홍길동 |
+| R-04 | 요구사항 변경 | 중간 | 높음 | 변경 관리 프로세스, 이해관계자 동의 필수 | 김연구 |
+
+---
+
+> 💡 **연계 Agent 활용**: **산출물 관리표** Agent와 연계하여 각 WBS 항목의 산출물 완료 상태를 동기화하세요.
+
+---
+*본 개발 WBS는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 주간 단위로 진행률을 업데이트하세요.*
 """
 
     # ── Phase 1-B 신규 4개 Agent ──────────────────────────────────────────────
