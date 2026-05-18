@@ -928,11 +928,15 @@
     "priority": 1,
     "output_type": "document",
     "input_schema": {
-      "invention_title": {"type": "text", "label": "발명 명칭", "required": true, "placeholder": ""},
-      "technical_field": {"type": "text", "label": "기술 분야", "required": true, "placeholder": "예) 인공지능, 소프트웨어, 반도체"},
-      "problem_solved": {"type": "textarea", "label": "해결하는 문제", "required": true, "placeholder": "기존 기술의 문제점 및 한계"},
-      "solution_description": {"type": "textarea", "label": "해결 방법 (발명 내용)", "required": true, "placeholder": ""},
-      "novelty_points": {"type": "textarea", "label": "신규성·진보성 포인트", "required": false, "placeholder": "기존 기술 대비 차별화 요소"}
+      "invention_name": {"type": "text", "label": "발명 명칭", "required": true, "placeholder": "예) AI 기반 문서 자동 분류 시스템"},
+      "tech_field": {"type": "text", "label": "기술 분야", "required": true, "placeholder": "예) 인공지능, 소프트웨어, 반도체, 바이오"},
+      "problem_to_solve": {"type": "textarea", "label": "해결하려는 문제", "required": true, "placeholder": "기존 기술의 문제점 및 한계를 구체적으로 기술"},
+      "core_idea": {"type": "textarea", "label": "핵심 아이디어", "required": true, "placeholder": "발명의 핵심 개념 및 원리"},
+      "key_components": {"type": "textarea", "label": "주요 구성요소", "required": true, "placeholder": "발명을 구성하는 핵심 요소들 (예: 모듈A, 알고리즘B, 장치C)"},
+      "operation_flow": {"type": "textarea", "label": "동작 흐름", "required": false, "placeholder": "발명의 동작 순서 및 프로세스 설명"},
+      "differentiation": {"type": "textarea", "label": "기존 기술 대비 차별점", "required": true, "placeholder": "선행기술 대비 신규성·진보성 포인트"},
+      "expected_effects": {"type": "textarea", "label": "기대 효과", "required": false, "placeholder": "본 발명 적용 시 예상되는 효과 및 이점"},
+      "followup_items": {"type": "textarea", "label": "추가 검토 필요 사항", "required": false, "placeholder": "향후 보완·검토가 필요한 기술적 사항"}
     },
     "prompt_template_path": "prompts/patent_commercialization/patent_idea.md",
     "review_rule_path": "schemas/review/patent_review.json",
@@ -947,12 +951,14 @@
     "priority": 2,
     "output_type": "document",
     "input_schema": {
-      "invention_title": {"type": "text", "label": "발명 명칭", "required": true, "placeholder": ""},
-      "inventors": {"type": "text", "label": "발명자", "required": true, "placeholder": "예) 홍길동, 김발명"},
-      "technical_field": {"type": "text", "label": "기술 분야", "required": true, "placeholder": ""},
-      "background": {"type": "textarea", "label": "발명의 배경", "required": true, "placeholder": "종래기술의 문제점"},
-      "detailed_description": {"type": "textarea", "label": "발명의 상세 설명", "required": true, "placeholder": "발명의 구성 및 동작 원리"},
-      "claims": {"type": "textarea", "label": "청구 범위 (핵심 클레임)", "required": false, "placeholder": "보호받고자 하는 핵심 기술"}
+      "invention_name": {"type": "text", "label": "발명 명칭", "required": true, "placeholder": "예) 딥러닝 기반 이상 탐지 장치 및 방법"},
+      "tech_field": {"type": "text", "label": "기술 분야", "required": true, "placeholder": "예) 인공지능, 네트워크 보안, 의료기기"},
+      "background_tech": {"type": "textarea", "label": "발명의 배경기술", "required": true, "placeholder": "종래기술의 현황 및 문제점 (특허청 양식에 맞게)"},
+      "problem_to_solve": {"type": "textarea", "label": "해결하려는 과제", "required": true, "placeholder": "본 발명이 해결하고자 하는 기술적 과제"},
+      "solution_means": {"type": "textarea", "label": "과제 해결 수단", "required": true, "placeholder": "발명의 구성 및 동작 원리 상세 기술"},
+      "invention_effects": {"type": "textarea", "label": "발명의 효과", "required": true, "placeholder": "본 발명으로 인한 기술적 효과 및 이점"},
+      "detailed_embodiment": {"type": "textarea", "label": "발명의 실시예", "required": false, "placeholder": "구체적인 실시 형태 및 도면 설명"},
+      "claims": {"type": "textarea", "label": "청구항 (핵심 클레임)", "required": true, "placeholder": "독립항 및 종속항 핵심 내용 (예: 1. A 장치에 있어서, B를 포함하는 것을 특징으로 하는 장치)"}
     },
     "prompt_template_path": "prompts/patent_commercialization/patent_application.md",
     "review_rule_path": "schemas/review/patent_review.json",
@@ -967,9 +973,10 @@
     "priority": 3,
     "output_type": "table",
     "input_schema": {
-      "our_invention": {"type": "textarea", "label": "당사 발명 내용", "required": true, "placeholder": ""},
-      "prior_art_list": {"type": "textarea", "label": "선행기술 목록", "required": true, "placeholder": "선행 특허 또는 기술 설명"},
-      "comparison_dimensions": {"type": "text", "label": "비교 차원", "required": false, "placeholder": "예) 구성요소, 효과, 적용범위"}
+      "our_technology": {"type": "textarea", "label": "당사 기술 개요", "required": true, "placeholder": "당사 발명의 핵심 구성 및 특징을 기술"},
+      "prior_art_list": {"type": "textarea", "label": "선행기술 목록", "required": true, "placeholder": "선행 특허번호, 기술명, 핵심 구성 (예: KR10-2023-0012345: 딥러닝 기반 분류 장치)"},
+      "comparison_dimensions": {"type": "text", "label": "비교 차원", "required": false, "placeholder": "예) 구성요소, 동작원리, 적용범위, 처리속도, 정확도"},
+      "our_differentiation": {"type": "textarea", "label": "당사 기술의 차별성", "required": true, "placeholder": "선행기술 대비 신규성·진보성 핵심 포인트"}
     },
     "prompt_template_path": "prompts/patent_commercialization/prior_art.md",
     "review_rule_path": "schemas/review/patent_review.json",
@@ -984,10 +991,16 @@
     "priority": 4,
     "output_type": "document",
     "input_schema": {
-      "technology_description": {"type": "textarea", "label": "기술 설명", "required": true, "placeholder": "사업화할 기술 내용"},
-      "target_market": {"type": "textarea", "label": "목표 시장", "required": true, "placeholder": ""},
-      "commercialization_approach": {"type": "select", "label": "사업화 방식", "required": false, "options": ["자체 제품화", "기술이전/라이선스", "합작투자", "스핀오프"]},
-      "timeline": {"type": "text", "label": "사업화 목표 기간", "required": false, "placeholder": "예) 3년"}
+      "tech_name": {"type": "text", "label": "기술명", "required": true, "placeholder": "예) AI 기반 실시간 이상 탐지 기술"},
+      "tech_overview": {"type": "textarea", "label": "기술 개요", "required": true, "placeholder": "보유 기술의 핵심 내용, TRL 수준, 특허 현황"},
+      "target_market": {"type": "text", "label": "목표 시장", "required": true, "placeholder": "예) 국내 제조업 스마트팩토리, B2B SaaS"},
+      "target_industry": {"type": "text", "label": "목표 산업 분야", "required": false, "placeholder": "예) 반도체, 자동차, 의료, 금융"},
+      "customer_segment": {"type": "textarea", "label": "고객 세그먼트", "required": false, "placeholder": "주요 고객군 및 Pain Point"},
+      "product_direction": {"type": "select", "label": "제품화 방향", "required": false, "options": ["자체 제품 개발", "기술이전/라이선스", "합작투자(JV)", "스핀오프/분사"]},
+      "revenue_model": {"type": "textarea", "label": "수익 모델", "required": false, "placeholder": "예) SaaS 구독, 기술이전료, 매출 로열티"},
+      "commercialization_stage": {"type": "select", "label": "현재 사업화 단계", "required": false, "options": ["아이디어/기획", "기술 개발중", "시제품 완성", "파일럿 진행중", "양산/서비스 준비"]},
+      "partnership_strategy": {"type": "textarea", "label": "파트너십 전략", "required": false, "placeholder": "필요한 파트너 유형 및 협력 방식"},
+      "risks": {"type": "textarea", "label": "주요 리스크", "required": false, "placeholder": "기술·시장·규제·자금 관련 주요 위험 요소"}
     },
     "prompt_template_path": "prompts/patent_commercialization/commercialization_strategy.md",
     "review_rule_path": "schemas/review/patent_review.json",
@@ -1002,10 +1015,14 @@
     "priority": 5,
     "output_type": "document",
     "input_schema": {
-      "product_name": {"type": "text", "label": "제품명", "required": true, "placeholder": ""},
-      "target_certification": {"type": "text", "label": "목표 인증", "required": true, "placeholder": "예) KC인증, CE, ISO27001"},
-      "test_requirements": {"type": "textarea", "label": "시험 요건", "required": false, "placeholder": "인증 취득을 위한 시험 항목"},
-      "planned_schedule": {"type": "text", "label": "취득 목표 일정", "required": false, "placeholder": "예) 2024년 12월"}
+      "certification_purpose": {"type": "textarea", "label": "인증 취득 목적", "required": true, "placeholder": "예) 공공기관 조달 등록, 해외 수출, 투자 유치 대비"},
+      "product_name": {"type": "text", "label": "제품/서비스명", "required": true, "placeholder": "예) MiracleScan AI 문서 분석 솔루션 v2.0"},
+      "certification_type": {"type": "textarea", "label": "목표 인증 종류", "required": true, "placeholder": "예) GS인증 1등급, ISMS-P, CC인증 EAL2, ISO27001"},
+      "performance_items": {"type": "textarea", "label": "성능 시험 항목", "required": false, "placeholder": "처리속도, 정확도, 동시접속, 응답시간 등 성능 요건"},
+      "safety_items": {"type": "textarea", "label": "보안/안전 시험 항목", "required": false, "placeholder": "취약점 점검, 침투 테스트, 데이터 암호화 등"},
+      "reliability_items": {"type": "textarea", "label": "신뢰성 시험 항목", "required": false, "placeholder": "가용성, 무결성, 장애복구, 연속운전 등"},
+      "test_organizations": {"type": "textarea", "label": "시험 기관", "required": false, "placeholder": "예) TTA(한국정보통신기술협회), KTC, KISA"},
+      "schedule": {"type": "text", "label": "인증 취득 목표 일정", "required": false, "placeholder": "예) 2026년 12월 (6개월 소요 예상)"}
     },
     "prompt_template_path": "prompts/patent_commercialization/certification_plan.md",
     "review_rule_path": "schemas/review/patent_review.json",
