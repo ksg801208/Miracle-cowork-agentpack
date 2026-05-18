@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
+import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import AreaDetail from './pages/AreaDetail';
 import AgentRunPage from './pages/AgentRun';
@@ -8,31 +11,54 @@ import ProjectDetail from './pages/ProjectDetail';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route
-          path="/dashboard"
-          element={<MainLayout><Dashboard /></MainLayout>}
-        />
-        <Route
-          path="/areas/:areaId"
-          element={<MainLayout><AreaDetail /></MainLayout>}
-        />
-        <Route
-          path="/agents/:agentId/run"
-          element={<MainLayout><AgentRunPage /></MainLayout>}
-        />
-        <Route
-          path="/projects"
-          element={<MainLayout><ProjectList /></MainLayout>}
-        />
-        <Route
-          path="/projects/:projectId"
-          element={<MainLayout><ProjectDetail /></MainLayout>}
-        />
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <MainLayout><Dashboard /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/areas/:areaId"
+            element={
+              <ProtectedRoute>
+                <MainLayout><AreaDetail /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/agents/:agentId/run"
+            element={
+              <ProtectedRoute>
+                <MainLayout><AgentRunPage /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              <ProtectedRoute>
+                <MainLayout><ProjectList /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects/:projectId"
+            element={
+              <ProtectedRoute>
+                <MainLayout><ProjectDetail /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }

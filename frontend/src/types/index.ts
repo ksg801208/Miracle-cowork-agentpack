@@ -1,3 +1,17 @@
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'manager' | 'member';
+  is_active: boolean;
+  created_at?: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  token: string | null;
+}
+
 export interface Area {
   area_id: string;
   name_ko: string;

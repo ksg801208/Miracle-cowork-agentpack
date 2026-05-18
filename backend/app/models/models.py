@@ -12,7 +12,9 @@ class User(Base):
     id = Column(String, primary_key=True, default=gen_uuid)
     name = Column(String(100), nullable=False)
     email = Column(String(200), unique=True, nullable=False)
-    role = Column(String(50), default="member")
+    role = Column(String(50), default="member")          # admin | manager | member
+    password_hash = Column(String(255), nullable=True)   # nullable for backward compat
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now())
     projects = relationship("Project", back_populates="owner")
     agent_runs = relationship("AgentRun", back_populates="requester")

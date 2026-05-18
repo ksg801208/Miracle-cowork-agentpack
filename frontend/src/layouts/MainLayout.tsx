@@ -1,12 +1,32 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { authApi } from '../services/api';
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: '관리자',
+  manager: '매니저',
+  member: '멤버',
+};
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const navItems = [
     { path: '/dashboard', label: '대시보드' },
     { path: '/projects', label: '프로젝트' },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      // 서버 오류여도 클라이언트 로그아웃 진행
+    }
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -39,10 +59,29 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               ))}
             </nav>
 
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                <span className="text-gray-600 text-xs font-medium">U</span>
-              </div>
+            {/* 사용자 정보 + 로그아웃 */}
+            <div className="flex items-center gap-3">
+              {user && (
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-blue-700 text-xs font-bold">
+                      {user.name.charAt(0)}
+                    </span>
+                  </div>
+                  <div className="hidden sm:block text-right">
+                    <div className="text-sm font-medium text-gray-900 leading-tight">{user.name}</div>
+                    <div className="text-xs text-gray-500 leading-tight">
+                      {ROLE_LABELS[user.role] ?? user.role}
+                    </div>
+                  </div>
+                </div>
+              )}
+              <button
+                onClick={handleLogout}
+                className="px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                로그아웃
+              </button>
             </div>
           </div>
         </div>

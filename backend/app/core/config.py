@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-sonnet-4-6"
 
+    # JWT 인증 설정
+    jwt_secret_key: str = "change-this-to-a-random-secret-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 60
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

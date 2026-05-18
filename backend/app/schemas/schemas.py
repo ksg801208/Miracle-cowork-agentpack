@@ -1,6 +1,33 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional, Any, Dict, List
 from datetime import datetime
+
+
+# ── 인증 스키마 ────────────────────────────────────────────────────────────────
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+class UserResponse(BaseModel):
+    id: str
+    name: str
+    email: str
+    role: str
+    is_active: bool
+    created_at: Optional[datetime] = None
+    class Config:
+        from_attributes = True
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
+
+class CreateAdminRequest(BaseModel):
+    name: str
+    email: str
+    password: str
 
 class ProjectCreate(BaseModel):
     name: str
