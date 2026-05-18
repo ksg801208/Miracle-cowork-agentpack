@@ -1020,11 +1020,15 @@
     "priority": 1,
     "output_type": "prompt",
     "input_schema": {
-      "task_description": {"type": "textarea", "label": "개발 작업 설명", "required": true, "placeholder": "구현할 기능 또는 해결할 문제를 설명하세요"},
-      "tech_stack": {"type": "text", "label": "기술 스택", "required": true, "placeholder": "예) Python/FastAPI, React/TypeScript"},
-      "constraints": {"type": "textarea", "label": "제약 조건", "required": false, "placeholder": "성능, 보안, 호환성 등 제약 사항"},
-      "expected_output": {"type": "textarea", "label": "기대 산출물", "required": false, "placeholder": "예) 실행 가능한 코드, 테스트 포함"},
-      "context": {"type": "textarea", "label": "추가 컨텍스트", "required": false, "placeholder": "기존 코드베이스 구조, 관련 파일 등"}
+      "task_description": {"type": "textarea", "label": "개발 목표", "required": true, "placeholder": "Claude Code에 지시할 개발 작업을 한 문장으로 명확하게 설명하세요"},
+      "target_features": {"type": "textarea", "label": "구현 대상 기능", "required": true, "placeholder": "구현해야 할 기능 목록을 나열하세요 (예: API 엔드포인트, DB 모델, 프론트엔드 화면)"},
+      "tech_stack": {"type": "text", "label": "기술 스택", "required": true, "placeholder": "예) Python/FastAPI, React/TypeScript, SQLite"},
+      "input_requirements": {"type": "textarea", "label": "입력 요구사항", "required": false, "placeholder": "함수/API의 입력값, 파라미터, 데이터 형식을 설명하세요"},
+      "output_requirements": {"type": "textarea", "label": "출력 요구사항", "required": false, "placeholder": "기대하는 반환값, API 응답 형식, UI 출력 내용을 설명하세요"},
+      "file_scope": {"type": "textarea", "label": "파일/폴더 수정 범위", "required": false, "placeholder": "수정 또는 생성할 파일 경로 (예: backend/app/api/, frontend/src/pages/)"},
+      "constraints": {"type": "textarea", "label": "제약조건", "required": false, "placeholder": "기존 코드 스타일 유지, 하위호환성, 보안 요구사항 등"},
+      "test_criteria": {"type": "textarea", "label": "테스트 기준", "required": false, "placeholder": "완료 판정 기준 (예: 단위 테스트 PASS, 정상/예외 케이스 포함)"},
+      "additional_context": {"type": "textarea", "label": "추가 컨텍스트", "required": false, "placeholder": "기존 코드베이스 구조, 관련 파일, 참고 사항 등"}
     },
     "prompt_template_path": "prompts/claude_code_dev/claude_prompt.md",
     "review_rule_path": "schemas/review/dev_review.json",
@@ -1039,10 +1043,11 @@
     "priority": 2,
     "output_type": "document",
     "input_schema": {
+      "project_overview": {"type": "textarea", "label": "프로젝트 개요", "required": true, "placeholder": "서비스 목적, 주요 기능, 예상 사용자 수 등을 간략히 설명하세요"},
       "project_type": {"type": "select", "label": "프로젝트 유형", "required": true, "options": ["웹 풀스택", "백엔드 API", "프론트엔드 SPA", "모바일 앱", "AI/ML 프로젝트", "CLI 도구"]},
-      "tech_stack": {"type": "text", "label": "기술 스택", "required": true, "placeholder": "예) FastAPI + React + PostgreSQL"},
+      "tech_stack": {"type": "text", "label": "기술 스택", "required": true, "placeholder": "예) FastAPI + React/TypeScript + PostgreSQL"},
       "team_size": {"type": "select", "label": "팀 규모", "required": false, "options": ["1인 개발", "소규모 (2-5명)", "중규모 (6-15명)", "대규모 (15명+)"]},
-      "scalability_requirements": {"type": "textarea", "label": "확장성 요구사항", "required": false, "placeholder": "마이크로서비스 전환 계획, 멀티테넌시 등"}
+      "scalability_requirements": {"type": "textarea", "label": "확장성 고려사항", "required": false, "placeholder": "마이크로서비스 전환, 멀티테넌시, 트래픽 규모 등을 입력하세요"}
     },
     "prompt_template_path": "prompts/claude_code_dev/folder_structure.md",
     "review_rule_path": "schemas/review/dev_review.json",
@@ -1057,11 +1062,13 @@
     "priority": 3,
     "output_type": "document",
     "input_schema": {
-      "bug_description": {"type": "textarea", "label": "버그 설명", "required": true, "placeholder": "발생한 버그를 설명하세요"},
-      "environment": {"type": "text", "label": "발생 환경", "required": true, "placeholder": "예) Windows 10, Chrome 124, Node 20"},
-      "reproduction_steps": {"type": "textarea", "label": "재현 단계", "required": true, "placeholder": "1. ... 2. ... 3. ..."},
-      "expected_behavior": {"type": "textarea", "label": "기대 동작", "required": true, "placeholder": ""},
-      "actual_behavior": {"type": "textarea", "label": "실제 동작", "required": true, "placeholder": ""},
+      "bug_title": {"type": "text", "label": "버그 제목", "required": true, "placeholder": "예) 특정 입력값에서 500 에러 발생"},
+      "symptom": {"type": "textarea", "label": "오류 현상", "required": true, "placeholder": "어떤 상황에서 어떤 오류가 발생했는지 구체적으로 설명하세요"},
+      "reproduce_steps": {"type": "textarea", "label": "재현 조건 및 단계", "required": true, "placeholder": "1. ... 2. ... 3. ... (누구나 따라할 수 있도록 구체적으로 작성)"},
+      "expected_behavior": {"type": "textarea", "label": "기대 동작", "required": true, "placeholder": "정상적으로 동작했을 때 예상되는 결과를 입력하세요"},
+      "actual_behavior": {"type": "textarea", "label": "실제 동작", "required": true, "placeholder": "실제로 발생한 결과, 오류 메시지, 스택 트레이스를 입력하세요"},
+      "environment": {"type": "text", "label": "발생 환경", "required": false, "placeholder": "예) Windows 10, Python 3.11, FastAPI 0.104"},
+      "related_files": {"type": "textarea", "label": "관련 파일 경로", "required": false, "placeholder": "버그와 관련된 파일 경로를 입력하세요 (예: backend/app/api/agents.py)"},
       "severity": {"type": "select", "label": "심각도", "required": false, "options": ["Critical", "High", "Medium", "Low"]}
     },
     "prompt_template_path": "prompts/claude_code_dev/bug_report.md",
@@ -1077,9 +1084,11 @@
     "priority": 4,
     "output_type": "document",
     "input_schema": {
-      "project_name": {"type": "text", "label": "프로젝트명", "required": true, "placeholder": ""},
+      "project_name": {"type": "text", "label": "프로젝트명", "required": true, "placeholder": "예) Miracle-Cowork AgentPack"},
+      "project_description": {"type": "textarea", "label": "프로젝트 설명", "required": true, "placeholder": "서비스 목적, 핵심 기능, 주요 특징을 2~3문장으로 설명하세요"},
+      "tech_stack": {"type": "text", "label": "기술 스택", "required": true, "placeholder": "예) FastAPI + React/TypeScript + SQLite"},
       "doc_type": {"type": "select", "label": "문서 유형", "required": true, "options": ["README.md", "CHANGELOG.md", "API 문서", "기술 아키텍처 문서", "개발 가이드"]},
-      "code_context": {"type": "textarea", "label": "코드/프로젝트 정보", "required": true, "placeholder": "주요 기능, 구조, 사용 방법 등"},
+      "code_context": {"type": "textarea", "label": "코드/프로젝트 정보", "required": true, "placeholder": "주요 기능, 폴더 구조, API 엔드포인트, 환경변수 등 문서화에 필요한 정보를 입력하세요"},
       "target_audience": {"type": "select", "label": "대상 독자", "required": false, "options": ["내부 개발팀", "외부 개발자", "비개발자 이해관계자"]}
     },
     "prompt_template_path": "prompts/claude_code_dev/dev_doc.md",
@@ -1095,10 +1104,10 @@
     "priority": 5,
     "output_type": "document",
     "input_schema": {
-      "project_name": {"type": "text", "label": "프로젝트명", "required": true, "placeholder": ""},
-      "test_scope": {"type": "textarea", "label": "테스트 범위", "required": true, "placeholder": "자동화할 테스트 대상"},
-      "tech_stack": {"type": "text", "label": "기술 스택", "required": true, "placeholder": "예) Python/pytest, Jest, Cypress"},
-      "test_framework": {"type": "text", "label": "테스트 프레임워크", "required": false, "placeholder": "예) pytest, Jest, Playwright"},
+      "project_name": {"type": "text", "label": "프로젝트명", "required": true, "placeholder": "예) Miracle-Cowork AgentPack"},
+      "target_features": {"type": "textarea", "label": "테스트 대상 기능", "required": true, "placeholder": "자동화 테스트를 작성할 기능 목록을 입력하세요 (API 엔드포인트, 핵심 함수 등)"},
+      "tech_stack": {"type": "text", "label": "기술 스택", "required": true, "placeholder": "예) Python/FastAPI, React/TypeScript"},
+      "test_framework": {"type": "text", "label": "테스트 프레임워크", "required": false, "placeholder": "예) pytest + httpx, Jest + React Testing Library, Playwright"},
       "automation_level": {"type": "select", "label": "자동화 수준", "required": false, "options": ["단위 테스트", "통합 테스트", "E2E 테스트", "전체 (단위+통합+E2E)"]}
     },
     "prompt_template_path": "prompts/claude_code_dev/test_automation.md",
@@ -1114,10 +1123,11 @@
     "priority": 6,
     "output_type": "document",
     "input_schema": {
+      "code_target": {"type": "text", "label": "리뷰 대상 파일/함수", "required": true, "placeholder": "예) backend/app/api/agents.py 또는 run_agent() 함수"},
+      "language": {"type": "text", "label": "언어/프레임워크", "required": true, "placeholder": "예) Python/FastAPI, TypeScript/React"},
       "code_snippet": {"type": "textarea", "label": "리뷰 대상 코드", "required": true, "placeholder": "리뷰할 코드를 붙여넣기 하세요"},
-      "programming_language": {"type": "text", "label": "프로그래밍 언어", "required": true, "placeholder": "예) Python, TypeScript, Go"},
       "review_focus": {"type": "select", "label": "중점 리뷰 항목", "required": false, "options": ["전체 종합", "보안 취약점", "성능 최적화", "코드 품질", "유지보수성"]},
-      "context": {"type": "textarea", "label": "코드 컨텍스트", "required": false, "placeholder": "이 코드의 역할, 사용 환경 등"}
+      "context": {"type": "textarea", "label": "코드 컨텍스트", "required": false, "placeholder": "이 코드의 역할, 호출 위치, 사용 환경 등을 설명하세요"}
     },
     "prompt_template_path": "prompts/claude_code_dev/code_review.md",
     "review_rule_path": "schemas/review/dev_review.json",
