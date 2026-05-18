@@ -63,11 +63,39 @@ export const projectsApi = {
 export const documentsApi = {
   create: (data: {
     project_id?: string;
+    agent_id?: string;
+    area_id?: string;
     title: string;
     document_type?: string;
     content_markdown: string;
     agent_run_id?: string;
   }): Promise<Document> => http.post('/documents', data).then(r => r.data),
+
+  getById: (documentId: string): Promise<Document> =>
+    http.get(`/documents/${documentId}`).then(r => r.data),
+
+  getDownloadUrl: (documentId: string): string =>
+    `/api/documents/${documentId}/download`,
+
+  download: async (documentId: string, title: string): Promise<void> => {
+    const token = getStoredToken();
+    const res = await fetch(`/api/documents/${documentId}/download`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!res.ok) throw new Error('다운로드 실패');
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  },
+
+  delete: (documentId: string): Promise<void> =>
+    http.delete(`/documents/${documentId}`).then(() => undefined),
 };
 
 export const tasksApi = {

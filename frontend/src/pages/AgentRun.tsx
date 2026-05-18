@@ -19,6 +19,7 @@ export default function AgentRunPage() {
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<AgentRunType | null>(null);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -58,6 +59,7 @@ export default function AgentRunPage() {
     setRunning(true);
     setResult(null);
     setSaved(false);
+    setSaveError('');
     const currentAgent = agent!;
     try {
       const run = await agentsApi.run(currentAgent.agent_id, {
@@ -76,9 +78,12 @@ export default function AgentRunPage() {
 
   async function handleSave() {
     if (!result?.output_text) return;
+    setSaveError('');
     try {
       await documentsApi.create({
         project_id: selectedProject || undefined,
+        agent_id: agent!.agent_id,
+        area_id: agent!.area_id,
         title: `[${agent!.name_ko}] ${new Date().toLocaleString('ko-KR')}`,
         document_type: agent!.output_type,
         content_markdown: result.output_text,
@@ -86,7 +91,7 @@ export default function AgentRunPage() {
       });
       setSaved(true);
     } catch {
-      alert('저장 중 오류가 발생했습니다.');
+      setSaveError('저장 중 오류가 발생했습니다. 로그인 상태를 확인하세요.');
     }
   }
 
@@ -220,10 +225,11 @@ export default function AgentRunPage() {
         <div className="lg:col-span-2">
           {result ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <StatusBadge status={result.status} />
-                {saved && <span className="text-xs text-green-600 font-medium">✓ 저장됨</span>}
-                {copied && <span className="text-xs text-blue-600 font-medium">✓ 복사됨</span>}
+                {saved && <span className="text-xs text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded-full">✓ 저장 완료</span>}
+                {copied && <span className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded-full">✓ 복사됨</span>}
+                {saveError && <span className="text-xs text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded-full">{saveError}</span>}
               </div>
               <RunResultViewer
                 content={result.output_text ?? ''}

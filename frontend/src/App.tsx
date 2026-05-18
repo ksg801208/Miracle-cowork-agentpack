@@ -8,6 +8,7 @@ import AreaDetail from './pages/AreaDetail';
 import AgentRunPage from './pages/AgentRun';
 import ProjectList from './pages/ProjectList';
 import ProjectDetail from './pages/ProjectDetail';
+import DocumentDetail from './pages/DocumentDetail';
 
 export default function App() {
   return (
@@ -53,6 +54,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <MainLayout><ProjectDetail /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/documents/:documentId"
+            element={
+              <ProtectedRoute>
+                <MainLayout><DocumentDetail /></MainLayout>
               </ProtectedRoute>
             }
           />

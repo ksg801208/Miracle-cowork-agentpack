@@ -69,19 +69,24 @@ class AgentRunResponse(BaseModel):
 
 class DocumentCreate(BaseModel):
     project_id: Optional[str] = None
+    agent_id: Optional[str] = None
+    area_id: Optional[str] = None
     title: str
     document_type: Optional[str] = None
     content_markdown: str
     agent_run_id: Optional[str] = None
-    created_by: Optional[str] = None
+    # created_by는 서버에서 인증 토큰 기반으로 설정
 
 class DocumentResponse(BaseModel):
     document_id: str
     project_id: Optional[str] = None
+    agent_id: Optional[str] = None
+    area_id: Optional[str] = None
     title: str
     document_type: Optional[str] = None
     content_markdown: Optional[str] = None
     agent_run_id: Optional[str] = None
+    created_by: Optional[str] = None
     created_at: Optional[datetime] = None
     class Config:
         from_attributes = True

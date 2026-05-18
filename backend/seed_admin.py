@@ -18,19 +18,30 @@ from app.core.security import hash_password
 from sqlalchemy.orm import Session
 import uuid
 
-# 기존 SQLite DB에 password_hash, is_active 컬럼이 없을 경우 추가
+# 기존 SQLite DB에 신규 컬럼이 없을 경우 추가
 db_path = "miracle_agentpack.db"
 if os.path.exists(db_path):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
+
     cursor.execute("PRAGMA table_info(users)")
-    columns = [row[1] for row in cursor.fetchall()]
-    if "password_hash" not in columns:
+    user_cols = [row[1] for row in cursor.fetchall()]
+    if "password_hash" not in user_cols:
         cursor.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
-        print("컬럼 추가: password_hash")
-    if "is_active" not in columns:
+        print("컬럼 추가: users.password_hash")
+    if "is_active" not in user_cols:
         cursor.execute("ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1")
-        print("컬럼 추가: is_active")
+        print("컬럼 추가: users.is_active")
+
+    cursor.execute("PRAGMA table_info(documents)")
+    doc_cols = [row[1] for row in cursor.fetchall()]
+    if "agent_id" not in doc_cols:
+        cursor.execute("ALTER TABLE documents ADD COLUMN agent_id TEXT")
+        print("컬럼 추가: documents.agent_id")
+    if "area_id" not in doc_cols:
+        cursor.execute("ALTER TABLE documents ADD COLUMN area_id TEXT")
+        print("컬럼 추가: documents.area_id")
+
     conn.commit()
     conn.close()
 
