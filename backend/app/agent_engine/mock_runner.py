@@ -60,9 +60,13 @@ class MockAgentRunner:
             "customer_meeting_prep": self._customer_meeting_prep,
             "customer_reply_email": self._customer_reply_email,
             "poc_proposal": self._poc_proposal,
-            # ── 기타 영역 ──
+            # ── Phase 1-G: 개발협업/Claude Code 연계 6개 Agent ──
             "claude_code_prompt": self._claude_code_prompt,
             "folder_structure_design": self._folder_structure_design,
+            "code_review": self._code_review,
+            "bug_report": self._bug_report,
+            "dev_doc_automation": self._dev_doc_automation,
+            "test_automation": self._test_automation,
         }
 
         fn = generators.get(agent_id)
@@ -3714,112 +3718,1025 @@ PoC 결과, 필수 기준을 모두 충족하는 경우 **성공**으로 판정�
 """
 
     def _claude_code_prompt(self, inp: dict) -> str:
-        task = inp.get("task_description", "기능을 구현해주세요")
-        stack = inp.get("tech_stack", "Python/FastAPI, React/TypeScript")
-        constraints = inp.get("constraints", "- 기존 코드 스타일 유지")
-        expected = inp.get("expected_output", "실행 가능한 코드, 테스트 포함")
+        today = date.today().strftime("%Y년 %m월 %d일")
+        task = inp.get("task_description", "신규 기능을 구현해주세요")
+        features = inp.get("target_features", "API 엔드포인트 구현, 데이터 모델 설계, 프론트엔드 연동")
+        stack = inp.get("tech_stack", "Python/FastAPI, React/TypeScript, SQLite")
+        input_req = inp.get("input_requirements", "사용자 입력값, 요청 파라미터")
+        output_req = inp.get("output_requirements", "JSON 응답, UI 화면 출력")
+        file_scope = inp.get("file_scope", "backend/app/api/, frontend/src/pages/")
+        constraints = inp.get("constraints", "기존 코드 스타일 유지, 기존 API 하위호환성 유지")
+        test_criteria = inp.get("test_criteria", "단위 테스트 작성, 정상/예외 케이스 포함")
         context = inp.get("additional_context", "")
         return f"""# Claude Code 개발 지시문
 
+**작성일:** {today}
+**작업 유형:** 신규 기능 개발
+
 ---
 
-## 작업 목표
+## 1. 개발 목표
 
 {task}
 
-## 기술 스택
-
-{stack}
-
-## 구현 요구사항
-
-### 필수 구현
-1. 핵심 비즈니스 로직 구현
-2. 입력 유효성 검사 (API 경계 지점)
-3. 에러 처리 및 적절한 HTTP 상태 코드 반환
-4. 기본 단위 테스트 작성
-
-### 코드 품질 기준
-- 함수는 단일 책임 원칙 준수
-- 변수/함수명은 의미 있는 영어 사용
-- 주석은 WHY 위주로 작성 (WHAT은 코드가 설명)
-- 보안 취약점 없을 것 (SQL Injection, XSS 등)
-
-## 파일 구조
-
-```
-기존 프로젝트 구조에 맞게 적절한 위치에 파일 생성
-새 디렉토리가 필요한 경우 먼저 생성 후 파일 배치
-```
-
-## 기대 산출물
-
-{expected}
-
-## 완료 기준
-- [ ] 코드가 오류 없이 실행됨
-- [ ] 모든 요구사항이 구현됨
-- [ ] 테스트가 통과됨
-- [ ] README 또는 주석으로 사용법 명시
-
-## 주의사항
-
-{constraints}
-{f'## 추가 컨텍스트{chr(10)}{context}' if context else ''}
+이 작업은 기존 코드베이스에 새로운 기능을 추가하는 것으로, 아래 요구사항을 완전히 충족하는 코드를 작성해주세요.
 
 ---
-*본 프롬프트는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다.*
+
+## 2. 구현 대상 기능
+
+{features}
+
+| 기능 | 설명 | 우선순위 |
+|---|---|---|
+| 핵심 기능 구현 | 비즈니스 로직 및 API 엔드포인트 | 높음 |
+| 입력 유효성 검사 | API 경계에서 입력값 검증 | 높음 |
+| 에러 처리 | 예외 상황 핸들링 및 적절한 응답 | 높음 |
+| 단위 테스트 | 정상/예외 케이스 커버 | 중간 |
+
+---
+
+## 3. 기술 스택
+
+```
+{stack}
+```
+
+**코딩 컨벤션:**
+- Python: snake_case, type hint 필수, docstring 불필요
+- TypeScript: camelCase, 명시적 타입 선언, any 사용 금지
+- 주석: WHY 위주 (WHAT은 코드가 설명)
+
+---
+
+## 4. 입력 요구사항
+
+{input_req}
+
+| 입력 항목 | 타입 | 필수 여부 | 유효성 검사 |
+|---|---|---|---|
+| 주요 입력값 | string/object | 필수 | null 체크, 형식 검증 |
+| 선택 파라미터 | string | 선택 | 기본값 설정 |
+
+---
+
+## 5. 출력 요구사항
+
+{output_req}
+
+**API 응답 형식 (JSON):**
+```json
+{{
+  "status": "success",
+  "data": {{}},
+  "message": "처리 완료"
+}}
+```
+
+---
+
+## 6. 파일/폴더 수정 범위
+
+**수정 대상 경로:** `{file_scope}`
+
+| 파일 | 작업 유형 | 내용 |
+|---|---|---|
+| 신규 파일 | CREATE | 핵심 기능 구현 |
+| 기존 파일 | MODIFY | 라우터 등록, 설정 추가 |
+| 테스트 파일 | CREATE | 단위 테스트 작성 |
+
+> 기존 파일 수정 시 반드시 변경 전후 diff를 확인하고, 기존 기능이 손상되지 않도록 주의하세요.
+
+---
+
+## 7. 제약조건
+
+{constraints}
+
+- 기존 API 엔드포인트의 하위호환성을 반드시 유지할 것
+- 하드코딩된 시크릿/API 키를 코드에 포함하지 말 것
+- 보안 취약점 없을 것 (SQL Injection, XSS, CSRF 등)
+- 외부 라이브러리 추가 시 반드시 requirements.txt 또는 package.json 업데이트
+
+---
+
+## 8. 테스트 기준
+
+{test_criteria}
+
+```
+# 테스트 실행 명령
+py -m pytest tests/ -v              # Python
+npm test                             # Node.js/React
+```
+
+**테스트 완료 기준:**
+- [ ] 모든 정상 케이스 PASS
+- [ ] 예외/에러 케이스 PASS
+- [ ] 기존 회귀 테스트 PASS
+
+---
+
+## 9. Claude Code 최종 지시 프롬프트
+
+> **아래 프롬프트를 Claude Code에 그대로 붙여넣어 사용하세요.**
+
+---
+
+```
+{task}
+
+기술 스택: {stack}
+
+구현 대상:
+{features}
+
+파일 수정 범위: {file_scope}
+
+제약조건:
+{constraints}
+
+완료 기준:
+- 코드가 오류 없이 실행됨
+- {test_criteria}
+- 기존 기능 회귀 없음
+```
+{f'{chr(10)}---{chr(10)}## 추가 컨텍스트{chr(10)}{chr(10)}{context}' if context else ''}
+
+---
+*본 Claude Code 지시문은 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 실행 전 프로젝트 컨텍스트를 확인하세요.*
 """
 
     def _folder_structure_design(self, inp: dict) -> str:
-        project_type = inp.get("project_type", "웹 풀스택")
-        stack = inp.get("tech_stack", "FastAPI + React + PostgreSQL")
+        today = date.today().strftime("%Y년 %m월 %d일")
+        project_type = inp.get("project_type", "웹 풀스택 서비스")
+        stack = inp.get("tech_stack", "FastAPI + React/TypeScript + PostgreSQL")
+        overview = inp.get("project_overview", "B2B SaaS 플랫폼")
+        team_size = inp.get("team_size", "소규모 (2-5명)")
+        scalability = inp.get("scalability_requirements", "마이크로서비스 전환 고려, 멀티테넌시 미지원")
         return f"""# 폴더 구조 설계서
 
-**프로젝트 유형:** {project_type}  **기술 스택:** {stack}
+**작성일:** {today}
+**프로젝트 유형:** {project_type}
+**기술 스택:** {stack}
+**팀 규모:** {team_size}
 
 ---
 
-## 권장 폴더 구조
+## 1. 프로젝트 개요
+
+{overview}
+
+| 항목 | 내용 |
+|---|---|
+| 프로젝트 유형 | {project_type} |
+| 기술 스택 | {stack} |
+| 팀 규모 | {team_size} |
+| 확장성 요구사항 | {scalability} |
+
+---
+
+## 2. 권장 폴더 구조
 
 ```
 project-root/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py              # FastAPI 앱 진입점
+│   │   ├── main.py                  # FastAPI 앱 진입점, 미들웨어 등록
 │   │   ├── core/
-│   │   │   ├── config.py        # 환경 설정
-│   │   │   └── database.py      # DB 연결
-│   │   ├── api/                 # 라우터 모음
-│   │   ├── models/              # SQLAlchemy 모델
-│   │   ├── schemas/             # Pydantic 스키마
-│   │   └── services/            # 비즈니스 로직
+│   │   │   ├── config.py            # 환경변수 기반 설정 (pydantic-settings)
+│   │   │   ├── database.py          # DB 연결 및 세션 관리
+│   │   │   └── security.py          # 인증/인가 유틸리티
+│   │   ├── api/
+│   │   │   ├── __init__.py
+│   │   │   └── v1/                  # API 버전 관리
+│   │   │       ├── router.py        # 전체 라우터 집합
+│   │   │       └── endpoints/       # 도메인별 엔드포인트
+│   │   ├── models/                  # SQLAlchemy ORM 모델
+│   │   ├── schemas/                 # Pydantic 요청/응답 스키마
+│   │   ├── services/                # 비즈니스 로직 레이어
+│   │   ├── repositories/            # 데이터 접근 레이어 (DB 쿼리)
+│   │   └── utils/                   # 공통 유틸리티
 │   ├── tests/
+│   │   ├── unit/                    # 단위 테스트
+│   │   ├── integration/             # 통합 테스트
+│   │   └── conftest.py              # pytest 공통 픽스처
+│   ├── alembic/                     # DB 마이그레이션
 │   └── requirements.txt
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   ├── types/
-│   │   └── utils/
+│   │   ├── components/              # 재사용 가능한 UI 컴포넌트
+│   │   │   ├── common/              # 공통 컴포넌트 (Button, Modal 등)
+│   │   │   └── features/            # 기능별 컴포넌트
+│   │   ├── pages/                   # 라우트 단위 페이지 컴포넌트
+│   │   ├── services/                # API 호출 함수 모음
+│   │   ├── store/                   # 전역 상태 관리 (Zustand/Redux)
+│   │   ├── types/                   # TypeScript 타입 정의
+│   │   ├── hooks/                   # 커스텀 React Hooks
+│   │   └── utils/                   # 프론트엔드 유틸리티 함수
+│   ├── public/
+│   ├── index.html
 │   └── vite.config.ts
 │
-├── config/                      # 공통 설정 파일
+├── config/                          # 공통 설정 파일 (agents.json 등)
+├── scripts/                         # 빌드, 배포, 초기화 스크립트
+├── docs/                            # 프로젝트 문서
+├── .env.example                     # 환경변수 템플릿
+├── docker-compose.yml               # 로컬 개발 환경
 └── README.md
 ```
 
 ---
 
-## 설계 원칙
+## 3. 각 폴더 역할
 
-1. **관심사 분리**: API 라우터 / 비즈니스 로직 / 데이터 접근 계층 분리
-2. **의존성 방향**: Controller → Service → Repository (단방향)
-3. **테스트 가능성**: 의존성 주입(DI) 패턴으로 모킹 용이
+| 폴더 | 역할 | 예시 파일 |
+|---|---|---|
+| `backend/app/api/` | HTTP 요청 라우팅 및 응답 | `agents.py`, `areas.py` |
+| `backend/app/services/` | 비즈니스 로직, 외부 API 연동 | `agent_service.py` |
+| `backend/app/repositories/` | DB 쿼리, ORM 조작 | `agent_repo.py` |
+| `backend/app/schemas/` | 요청/응답 데이터 검증 | `agent_schema.py` |
+| `frontend/src/components/` | 재사용 UI 단위 | `AgentCard.tsx`, `Button.tsx` |
+| `frontend/src/pages/` | 화면 단위 컴포넌트 | `Dashboard.tsx`, `Detail.tsx` |
+| `frontend/src/services/` | axios 기반 API 호출 | `agentApi.ts` |
 
 ---
-*본 설계서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다.*
+
+## 4. 주요 파일 설명
+
+| 파일 | 역할 |
+|---|---|
+| `backend/app/main.py` | FastAPI 앱 생성, CORS 미들웨어, 라우터 등록 |
+| `backend/app/core/config.py` | `.env` 파일 기반 환경변수 로딩 |
+| `backend/app/core/database.py` | SQLAlchemy 엔진, 세션 팩토리, Base 클래스 |
+| `frontend/src/services/api.ts` | axios 인스턴스 생성, 공통 헤더, 인터셉터 |
+| `frontend/src/store/index.ts` | 전역 상태 초기화 및 export |
+
+---
+
+## 5. 모듈 분리 기준
+
+| 원칙 | 설명 |
+|---|---|
+| 관심사 분리 | Router(HTTP) → Service(로직) → Repository(DB) 단방향 흐름 |
+| 도메인 중심 | 기능(agent, area, user)별로 파일 묶기 |
+| 테스트 용이성 | Service에 Repository를 의존성 주입 → 단위 테스트 모킹 가능 |
+| 재사용성 | 공통 유틸리티는 `utils/`, 공통 컴포넌트는 `components/common/` |
+
+---
+
+## 6. 확장성 고려사항
+
+{scalability}
+
+| 시나리오 | 대응 전략 |
+|---|---|
+| 트래픽 증가 | 수평 확장 가능한 stateless 설계 (세션 Redis 분리) |
+| 기능 추가 | 도메인별 모듈 추가로 기존 코드 수정 최소화 |
+| 마이크로서비스 전환 | Service 레이어를 독립 서비스로 분리 가능한 구조 |
+| 다국어/멀티테넌시 | 테넌트 ID 미들웨어 삽입 지점 사전 확보 |
+
+---
+
+## 7. 초기 생성 명령
+
+```bash
+# 프로젝트 초기 구조 생성 (PowerShell)
+mkdir backend/app/api/v1/endpoints, backend/app/services
+mkdir backend/app/repositories, backend/app/schemas
+mkdir backend/tests/unit, backend/tests/integration
+mkdir frontend/src/components/common, frontend/src/components/features
+mkdir frontend/src/pages, frontend/src/services
+mkdir frontend/src/store, frontend/src/types, frontend/src/hooks
+
+# 초기 파일 생성
+New-Item backend/app/main.py, backend/app/core/config.py -ItemType File
+New-Item backend/requirements.txt, .env.example, README.md -ItemType File
+```
+
+**작업 순서:**
+1. `.env.example` 작성 → `.env` 복사 후 실제 값 입력
+2. `backend/app/core/config.py` 환경변수 로딩 구현
+3. `backend/app/core/database.py` DB 연결 구현
+4. 도메인별 model → schema → repository → service → router 순 구현
+5. 프론트엔드 `services/api.ts` axios 설정 후 페이지 구현
+
+---
+*본 폴더구조 설계서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 프로젝트 특성에 맞게 조정하세요.*
+"""
+
+    # ── Phase 1-G: 개발협업/Claude Code 연계 6개 Agent ──────────────────────────
+
+    def _code_review(self, inp: dict) -> str:
+        today = date.today().strftime("%Y년 %m월 %d일")
+        target = inp.get("code_target", "backend/app/api/agents.py")
+        language = inp.get("language", "Python/FastAPI")
+        code_snippet = inp.get("code_snippet", "# 리뷰 대상 코드 미입력")
+        focus = inp.get("review_focus", "전체 종합")
+        context = inp.get("context", "REST API 엔드포인트 구현 코드")
+        return f"""# 코드리뷰 보고서
+
+**작성일:** {today}
+**리뷰 대상:** `{target}`
+**언어/프레임워크:** {language}
+**리뷰 중점:** {focus}
+
+---
+
+## 1. 리뷰 대상 요약
+
+**파일:** `{target}`
+**컨텍스트:** {context}
+
+```
+{code_snippet[:300]}{'...(이하 생략)' if len(code_snippet) > 300 else ''}
+```
+
+전체적으로 코드 구조는 파악 가능한 수준이며, 아래 항목별 세부 검토 결과를 확인하세요.
+
+---
+
+## 2. 코드 품질 점검
+
+| 항목 | 상태 | 세부 내용 |
+|---|---|---|
+| 함수 단일 책임 원칙 | ⚠️ 개선 필요 | 일부 함수가 2가지 이상의 역할 수행 |
+| 변수/함수명 명확성 | ✅ 양호 | 대부분 의미 있는 이름 사용 |
+| 중복 코드 | ⚠️ 개선 필요 | 유사 로직 3곳 이상 반복 → 공통 함수 추출 권고 |
+| 매직 넘버/문자열 | ❌ 문제 | 하드코딩된 상수값 → 상수 파일로 분리 필요 |
+| 타입 힌트 | ⚠️ 개선 필요 | 일부 함수 반환 타입 미선언 |
+| 코드 복잡도 | ✅ 양호 | 대부분 함수 cyclomatic complexity 5 이하 |
+
+---
+
+## 3. 구조/아키텍처 점검
+
+| 항목 | 상태 | 세부 내용 |
+|---|---|---|
+| 계층 분리 | ⚠️ 개선 필요 | 라우터에 비즈니스 로직 혼재 → Service 레이어로 분리 권고 |
+| 의존성 방향 | ✅ 양호 | 대체로 단방향 의존성 유지 |
+| 모듈 결합도 | ⚠️ 개선 필요 | 외부 모듈 직접 import → 의존성 주입 패턴 적용 권고 |
+| 확장성 | ✅ 양호 | 새 기능 추가 시 기존 코드 수정 최소화 구조 |
+
+---
+
+## 4. 보안/예외처리 점검
+
+| 항목 | 상태 | 세부 내용 |
+|---|---|---|
+| 입력값 검증 | ⚠️ 개선 필요 | 일부 엔드포인트 입력 유효성 검사 누락 |
+| SQL Injection | ✅ 안전 | ORM 사용으로 직접 쿼리 없음 |
+| 예외 처리 범위 | ❌ 문제 | bare except 사용 → 구체적 예외 타입 명시 필요 |
+| 민감정보 노출 | ✅ 안전 | 로그에 패스워드/키 미포함 확인 |
+| 인증/인가 | ⚠️ 개선 필요 | 일부 엔드포인트 인가 로직 누락 확인 필요 |
+| CORS 설정 | ⚠️ 개선 필요 | `allow_origins=["*"]` → 운영 환경에서 도메인 제한 필요 |
+
+---
+
+## 5. 성능/유지보수성 점검
+
+| 항목 | 상태 | 세부 내용 |
+|---|---|---|
+| N+1 쿼리 | ⚠️ 개선 필요 | 루프 내 개별 DB 호출 → 일괄 조회로 변경 권고 |
+| 캐싱 전략 | ❌ 미적용 | 반복 조회 데이터 캐싱 검토 필요 |
+| 비동기 처리 | ✅ 양호 | async/await 적절히 사용 |
+| 테스트 용이성 | ⚠️ 개선 필요 | 의존성 주입 미적용으로 단위 테스트 어려움 |
+| 로깅 | ⚠️ 개선 필요 | print() 대신 logging 모듈 사용 권고 |
+
+---
+
+## 6. 개선 권고사항
+
+### 즉시 수정 (Critical)
+```python
+# Before: bare except
+try:
+    result = process()
+except:
+    pass
+
+# After: 구체적 예외 처리
+try:
+    result = process()
+except ValueError as e:
+    logger.error(f"입력값 오류: {{e}}")
+    raise HTTPException(status_code=422, detail=str(e))
+except Exception as e:
+    logger.exception("예상치 못한 오류")
+    raise HTTPException(status_code=500, detail="내부 서버 오류")
+```
+
+### 권고 수정 (High)
+```python
+# Before: 라우터에 비즈니스 로직 혼재
+@router.get("/agents/{{agent_id}}")
+async def get_agent(agent_id: str, db: Session = Depends(get_db)):
+    agent = db.query(Agent).filter(Agent.id == agent_id).first()
+    # ... 복잡한 로직 ...
+
+# After: Service 레이어 분리
+@router.get("/agents/{{agent_id}}")
+async def get_agent(agent_id: str, service: AgentService = Depends()):
+    return await service.get_by_id(agent_id)
+```
+
+### 선택 개선 (Medium)
+- 하드코딩 상수를 `core/constants.py`로 분리
+- 반복 DB 조회 로직에 `@lru_cache` 또는 Redis 캐싱 적용
+- `print()` → `logging.getLogger(__name__)` 교체
+
+---
+
+## 7. 수정 우선순위
+
+| 순위 | 항목 | 예상 공수 | 영향도 |
+|---|---|---|---|
+| 1순위 | bare except → 구체적 예외 처리 | 1시간 | 보안/안정성 직결 |
+| 2순위 | 비즈니스 로직 Service 레이어 분리 | 3시간 | 유지보수성, 테스트 가능성 |
+| 3순위 | 입력값 유효성 검사 추가 | 1시간 | 보안, 안정성 |
+| 4순위 | N+1 쿼리 일괄 조회로 변경 | 2시간 | 성능 |
+| 5순위 | logging 모듈 교체 | 30분 | 운영 편의성 |
+
+---
+
+## 8. 리뷰 결론
+
+**종합 평가: B+ (개선 필요)**
+
+전체적으로 기능 동작에는 문제가 없으나, 운영 환경을 고려한 보안 처리와 계층 분리가 미흡합니다. 1~3순위 항목을 우선 수정 후 재검토를 권고합니다.
+
+**Claude Code 수정 지시 프롬프트:**
+```
+{target} 파일의 다음 사항을 수정해주세요:
+1. bare except를 구체적 예외 타입으로 교체
+2. 라우터 내 비즈니스 로직을 별도 Service 클래스로 분리
+3. 입력값 유효성 검사 추가 (Pydantic 활용)
+기존 기능과 API 응답 형식은 유지하세요.
+```
+
+---
+*본 코드리뷰 보고서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 실제 코드를 직접 검토 후 적용하세요.*
+"""
+
+    def _bug_report(self, inp: dict) -> str:
+        today = date.today().strftime("%Y년 %m월 %d일")
+        title = inp.get("bug_title", "기능 오작동 버그")
+        symptom = inp.get("symptom", "특정 조건에서 예상과 다른 결과 출력")
+        reproduce = inp.get("reproduce_steps", "1. 특정 입력값으로 API 호출\n2. 응답 확인")
+        environment = inp.get("environment", "OS: Windows 10, Python 3.11, FastAPI 0.104")
+        expected = inp.get("expected_behavior", "정상적인 JSON 응답 반환")
+        actual = inp.get("actual_behavior", "500 Internal Server Error 반환")
+        severity = inp.get("severity", "High")
+        file_path = inp.get("related_files", "backend/app/api/agents.py")
+        return f"""# 버그 리포트
+
+**제목:** {title}
+**작성일:** {today}
+**심각도:** {severity}
+**상태:** 분석 중
+
+---
+
+## 1. 오류 현상
+
+{symptom}
+
+| 항목 | 내용 |
+|---|---|
+| 오류 유형 | 기능 오작동 / 예외 발생 |
+| 발생 빈도 | 재현 조건 충족 시 100% 발생 |
+| 심각도 | {severity} |
+| 영향 버전 | 현재 운영 버전 |
+
+---
+
+## 2. 재현 조건
+
+**환경 정보:**
+```
+{environment}
+```
+
+**재현 단계:**
+```
+{reproduce}
+```
+
+**재현 데이터 예시:**
+```json
+{{
+  "input": "재현에 필요한 입력값",
+  "expected": "{expected}",
+  "actual": "{actual}"
+}}
+```
+
+---
+
+## 3. 예상 원인
+
+| 가능성 | 원인 가설 | 근거 |
+|---|---|---|
+| 높음 | 입력값 유효성 검사 누락 | 특정 입력에서만 발생 |
+| 중간 | 예외 처리 미흡 | 500 에러로 상세 오류 숨겨짐 |
+| 낮음 | 외부 의존성(DB/API) 오류 | 네트워크 상태 정상 확인됨 |
+
+**스택 트레이스 분석:**
+```
+Traceback (most recent call last):
+  File "{file_path}", line XX, in function_name
+    result = process(input_value)
+  ...
+오류 원인 추정: 입력값 None 처리 미흡 또는 타입 불일치
+```
+
+---
+
+## 4. 영향 범위
+
+| 구분 | 영향 여부 | 세부 내용 |
+|---|---|---|
+| 핵심 기능 | ⚠️ 영향 있음 | 해당 API 엔드포인트 정상 동작 불가 |
+| 연관 기능 | 확인 필요 | 동일 로직 공유 모듈 점검 필요 |
+| 데이터 무결성 | ✅ 영향 없음 | DB 트랜잭션 롤백 정상 작동 확인 |
+| 사용자 영향 | ⚠️ 영향 있음 | 해당 기능 이용 사용자 오류 경험 |
+
+**영향 사용자 범위:** 해당 기능을 사용하는 전체 사용자
+
+---
+
+## 5. 수정 방향
+
+### 단기 수정 (즉시 적용)
+```python
+# Before (문제 코드)
+def process_input(value):
+    return value.strip()  # value가 None일 때 AttributeError
+
+# After (수정 코드)
+def process_input(value: str | None) -> str:
+    if value is None:
+        raise ValueError("입력값이 비어 있습니다")
+    return value.strip()
+```
+
+### 중기 개선 (재발 방지)
+1. Pydantic 스키마에서 입력값 유효성 검사 강화
+2. 전역 예외 핸들러에서 상세 에러 로깅 추가
+3. 해당 함수에 대한 단위 테스트 추가 (None 케이스 포함)
+
+---
+
+## 6. 임시 우회 방법
+
+**즉시 적용 가능한 우회 방법:**
+```
+1. 클라이언트 측에서 빈 값 전송 방지 (프론트엔드 validation 추가)
+2. 관련 기능 일시 비활성화 (is_enabled: false 설정)
+3. 입력값 사전 정제 미들웨어 임시 적용
+```
+
+> ⚠️ 우회 방법은 임시 조치이며, 근본 원인 수정 후 제거해야 합니다.
+
+---
+
+## 7. Claude Code 수정 지시문
+
+> **아래 지시문을 Claude Code에 붙여넣어 수정을 요청하세요.**
+
+```
+{file_path} 파일에서 다음 버그를 수정해주세요:
+
+버그: {title}
+현상: {actual}
+예상 동작: {expected}
+
+수정 사항:
+1. 입력값 None/빈값 처리 추가
+2. 구체적인 예외 타입으로 예외 처리 교체
+3. 수정된 함수에 대한 단위 테스트 추가 (정상 케이스 + None 케이스)
+
+기존 API 응답 형식은 유지하고, 기존 통과하던 테스트는 계속 통과해야 합니다.
+```
+
+---
+*본 버그 리포트는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 실제 스택 트레이스 및 재현 단계를 상세히 추가 후 활용하세요.*
+"""
+
+    def _dev_doc_automation(self, inp: dict) -> str:
+        today = date.today().strftime("%Y년 %m월 %d일")
+        project = inp.get("project_name", "Miracle-Cowork AgentPack")
+        doc_type = inp.get("doc_type", "README")
+        description = inp.get("project_description", "AI 기반 업무자동화 플랫폼")
+        stack = inp.get("tech_stack", "FastAPI + React/TypeScript + SQLite")
+        code_context = inp.get("code_context", "REST API 기반 웹 서비스")
+        audience = inp.get("target_audience", "내부 개발팀")
+        return f"""# 개발 문서 자동화 보고서
+
+**프로젝트:** {project}
+**문서 유형:** {doc_type}
+**작성일:** {today}
+**대상 독자:** {audience}
+
+---
+
+## 1. README 초안
+
+```markdown
+# {project}
+
+> {description}
+
+{project}는 {stack} 기반으로 구축된 서비스입니다.
+```
+
+---
+
+## 2. 설치 방법
+
+```bash
+# 1. 저장소 클론
+git clone https://github.com/your-org/{project.lower().replace(' ', '-')}.git
+cd {project.lower().replace(' ', '-')}
+
+# 2. Python 가상환경 설정 (백엔드)
+py -m venv .venv
+.venv\\Scripts\\activate      # Windows
+# source .venv/bin/activate  # macOS/Linux
+
+# 3. 백엔드 의존성 설치
+pip install -r backend/requirements.txt
+
+# 4. 프론트엔드 의존성 설치
+cd frontend
+npm install
+cd ..
+
+# 5. 환경변수 설정
+copy .env.example .env        # Windows
+# cp .env.example .env        # macOS/Linux
+# .env 파일을 열어 실제 값으로 수정
+```
+
+---
+
+## 3. 실행 방법
+
+```bash
+# 백엔드 실행 (개발 서버)
+cd backend
+uvicorn app.main:app --reload --port 8000
+
+# 프론트엔드 실행 (개발 서버)
+cd frontend
+npm run dev
+# → http://localhost:5173 접속
+
+# 전체 빌드 (프로덕션)
+cd frontend && npm run build
+```
+
+---
+
+## 4. 환경변수 설명
+
+| 변수명 | 설명 | 기본값 | 필수 여부 |
+|---|---|---|---|
+| `DATABASE_URL` | DB 연결 문자열 | `sqlite:///./app.db` | 필수 |
+| `SECRET_KEY` | JWT 서명 키 | 없음 (반드시 설정) | 필수 |
+| `ALLOWED_ORIGINS` | CORS 허용 도메인 | `http://localhost:5173` | 개발 시 기본값 사용 |
+| `DEBUG` | 디버그 모드 | `false` | 선택 |
+| `LOG_LEVEL` | 로그 레벨 | `INFO` | 선택 |
+| `API_VERSION` | API 버전 | `v1` | 선택 |
+
+> ⚠️ `.env` 파일은 절대 git에 커밋하지 마세요. `.gitignore`에 포함되어 있는지 확인하세요.
+
+---
+
+## 5. API 사용 방법
+
+**Base URL:** `http://localhost:8000/api/v1`
+
+### 주요 엔드포인트
+
+```http
+# Agent 목록 조회
+GET /api/v1/agents
+Response: [{{"agent_id": "...", "name_ko": "...", "area_id": "..."}}]
+
+# Agent 실행
+POST /api/v1/agents/{{agent_id}}/run
+Content-Type: application/json
+Body: {{"field_name": "value", ...}}
+Response: {{"output_text": "...", "status": "completed"}}
+
+# 영역(Area) 목록 조회
+GET /api/v1/areas
+Response: [{{"area_id": "...", "name_ko": "..."}}]
+```
+
+**인증 (해당 시):**
+```http
+Authorization: Bearer {{jwt_token}}
+```
+
+---
+
+## 6. 폴더 구조 설명
+
+```
+{project}/
+├── backend/              # FastAPI 백엔드
+│   ├── app/
+│   │   ├── main.py       # 앱 진입점
+│   │   ├── api/          # REST API 라우터
+│   │   ├── agent_engine/ # Agent 실행 엔진
+│   │   └── core/         # 설정, DB 연결
+│   └── requirements.txt
+├── frontend/             # React/TypeScript 프론트엔드
+│   └── src/
+│       ├── pages/        # 화면 컴포넌트
+│       └── services/     # API 호출
+└── config/               # 공통 설정 (agents.json 등)
+```
+
+**기술 스택:** {stack}
+**컨텍스트:** {code_context}
+
+---
+
+## 7. 개발/배포 주의사항
+
+| 항목 | 개발 환경 | 운영 환경 |
+|---|---|---|
+| DB | SQLite (파일 기반) | PostgreSQL (별도 서버) |
+| CORS | `allow_origins=["*"]` | 허용 도메인만 명시 |
+| SECRET_KEY | 임시 키 사용 가능 | 강력한 랜덤 키 필수 |
+| DEBUG 모드 | `true` 허용 | 반드시 `false` |
+| 로그 레벨 | `DEBUG` | `WARNING` 이상 |
+| HTTPS | 불필요 | 필수 (인증서 설정) |
+
+**배포 전 체크리스트:**
+- [ ] `.env` 운영 환경 값 설정 완료
+- [ ] DEBUG=false 확인
+- [ ] SECRET_KEY 운영용 키로 교체
+- [ ] DB 마이그레이션 실행 (`alembic upgrade head`)
+- [ ] 프론트엔드 빌드 (`npm run build`)
+- [ ] CORS 도메인 운영 URL로 변경
+
+---
+
+## 8. 변경 이력 작성 형식
+
+```markdown
+## [버전] - YYYY-MM-DD
+
+### Added (신규 추가)
+- 기능명: 설명
+
+### Changed (변경)
+- 기능명: 이전 → 이후
+
+### Fixed (버그 수정)
+- 버그명: 증상 및 수정 내용
+
+### Removed (제거)
+- 기능명: 제거 이유
+
+---
+```
+
+**예시:**
+```markdown
+## [0.7.0] - 2025-05-18
+
+### Added
+- Phase 1-F: 제안/영업/고객 대응 7개 Agent 고도화
+
+### Changed
+- agents.json: planning_strategy input_schema 필드 확장
+
+### Fixed
+- mock_runner.py: f-string 내 중괄호 이스케이프 오류 수정
+```
+
+---
+*본 개발 문서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 실제 프로젝트 정보를 반영하여 수정 후 사용하세요.*
+"""
+
+    def _test_automation(self, inp: dict) -> str:
+        today = date.today().strftime("%Y년 %m월 %d일")
+        project = inp.get("project_name", "Miracle-Cowork AgentPack")
+        target_features = inp.get("target_features", "Agent 실행 API, 영역 조회 API, 결과 저장 기능")
+        stack = inp.get("tech_stack", "Python/FastAPI, pytest")
+        framework = inp.get("test_framework", "pytest, httpx")
+        level = inp.get("automation_level", "전체 (단위+통합+E2E)")
+        return f"""# 테스트 자동화 계획서
+
+**프로젝트:** {project}
+**작성일:** {today}
+**테스트 프레임워크:** {framework}
+**자동화 수준:** {level}
+
+---
+
+## 1. 테스트 목표
+
+**대상 기능:** {target_features}
+
+| 목표 | 세부 내용 |
+|---|---|
+| 기능 정확성 | 모든 API 엔드포인트가 명세대로 동작하는지 검증 |
+| 회귀 방지 | 코드 변경 후 기존 기능 손상 여부 자동 감지 |
+| 경계값 검증 | 빈 값, None, 최대/최소값 등 엣지 케이스 커버 |
+| 성능 기준 | 단일 Agent 실행 3초 이내 완료 확인 |
+
+---
+
+## 2. 테스트 대상 기능
+
+{target_features}
+
+| 기능 | 테스트 유형 | 우선순위 |
+|---|---|---|
+| Agent 실행 API | 단위 + 통합 | 높음 |
+| 영역/Agent 목록 조회 | 단위 + 통합 | 높음 |
+| 입력값 유효성 검사 | 단위 | 높음 |
+| 결과 저장/조회 | 통합 | 중간 |
+| 에러 응답 형식 | 단위 | 중간 |
+
+---
+
+## 3. 단위 테스트 시나리오
+
+```python
+# tests/unit/test_mock_runner.py
+import pytest
+from app.agent_engine.mock_runner import MockAgentRunner
+
+runner = MockAgentRunner()
+
+def run(agent_id, inputs):
+    return runner.run({{"agent_id": agent_id, "output_type": "document"}}, inputs)
+
+class TestAgentRunner:
+    def test_government_announcement_analysis(self):
+        result = run("government_announcement_analysis", {{
+            "announcement_title": "2025년 AI 바우처",
+            "announcement_content": "중소기업 AI 도입 지원",
+        }})
+        assert result["status"] == "completed"
+        assert len(result["output_text"]) > 200
+
+    def test_meeting_minutes(self):
+        result = run("meeting_minutes", {{
+            "meeting_title": "주간 회의",
+            "attendees": "김대표, 박CTO",
+            "agenda": "개발 현황",
+        }})
+        assert result["status"] == "completed"
+        assert "회의록" in result["output_text"]
+
+    def test_unknown_agent_uses_default(self):
+        result = run("nonexistent_agent", {{}})
+        assert result["status"] == "completed"
+
+    def test_empty_inputs_handled(self):
+        result = run("customer_proposal", {{}})
+        assert result["status"] == "completed"
+        assert result["output_text"] is not None
+```
+
+---
+
+## 4. 통합 테스트 시나리오
+
+```python
+# tests/integration/test_api_agents.py
+import pytest
+from fastapi.testclient import TestClient
+from app.main import app
+
+client = TestClient(app)
+
+class TestAgentAPI:
+    def test_list_agents(self):
+        response = client.get("/api/agents")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 57  # 전체 Agent 수 불변 검증
+
+    def test_list_areas(self):
+        response = client.get("/api/areas")
+        assert response.status_code == 200
+        areas = response.json()
+        assert len(areas) >= 6
+
+    def test_run_agent_success(self):
+        response = client.post("/api/agents/meeting_minutes/run", json={{
+            "meeting_title": "테스트 회의",
+            "attendees": "홍길동",
+            "agenda": "테스트 안건",
+        }})
+        assert response.status_code == 200
+        result = response.json()
+        assert result["status"] == "completed"
+        assert len(result["output_text"]) > 100
+
+    def test_run_agent_invalid_id(self):
+        response = client.post("/api/agents/invalid_agent_id/run", json={{}})
+        # 404 또는 기본 출력 반환
+        assert response.status_code in [200, 404]
+
+    def test_run_agent_empty_required_fields(self):
+        response = client.post("/api/agents/government_announcement_analysis/run", json={{}})
+        # 필수 필드 없어도 기본값으로 처리
+        assert response.status_code == 200
+```
+
+---
+
+## 5. 회귀 테스트 항목
+
+| Phase | 대표 Agent | 테스트 기준 |
+|---|---|---|
+| Phase 1-A | `government_announcement_analysis` | 출력 200자 이상, status=completed |
+| Phase 1-B | `meeting_minutes` | 출력 200자 이상, "회의록" 포함 |
+| Phase 1-C | `requirements_definition` | 출력 500자 이상 |
+| Phase 1-D | `document_summary` | 출력 200자 이상 |
+| Phase 1-E | `competitive_analysis` | 출력 500자 이상, SWOT 포함 |
+| Phase 1-F | `customer_proposal` | 출력 500자 이상, "제안서" 포함 |
+| Phase 1-G | `code_review` | 출력 500자 이상, "리뷰" 포함 |
+
+---
+
+## 6. 테스트 데이터
+
+```python
+# tests/fixtures/test_data.py
+TEST_INPUTS = {{
+    "government_announcement_analysis": {{
+        "announcement_title": "2025년 AI 바우처 지원사업",
+        "announcement_content": "중소기업 AI 도입 지원, 최대 3천만원",
+        "company_profile": "AI SaaS 스타트업, 설립 3년차",
+    }},
+    "meeting_minutes": {{
+        "meeting_title": "주간 개발 현황 회의",
+        "meeting_date": "2025-05-18",
+        "attendees": "김대표, 박CTO, 이개발",
+        "agenda": "Phase 1-G 진행 현황",
+        "discussion": "일정대로 진행 중, 이슈 없음",
+    }},
+    "customer_proposal": {{
+        "customer_name": "(주)테스트고객사",
+        "customer_pain_points": "수작업 문서 작성 시간 과다",
+        "proposed_solution": "AI 문서 자동화 플랫폼 도입",
+    }},
+}}
+```
+
+---
+
+## 7. 기대 결과
+
+| 테스트 구분 | 총 케이스 | 목표 통과율 | 허용 실패 |
+|---|---|---|---|
+| 단위 테스트 | 57개+ | 100% | 0건 |
+| 통합 테스트 | 20개+ | 100% | 0건 |
+| 회귀 테스트 | 7개 Phase | 100% | 0건 |
+| E2E 테스트 | 5개 핵심 시나리오 | 100% | 0건 |
+
+---
+
+## 8. 자동화 테스트 코드 작성 지시문
+
+> **아래 지시문을 Claude Code에 붙여넣어 테스트 코드 작성을 요청하세요.**
+
+```
+{project} 프로젝트의 테스트 코드를 작성해주세요.
+
+기술 스택: {stack}
+테스트 프레임워크: {framework}
+대상 기능: {target_features}
+
+요구사항:
+1. tests/unit/ 에 단위 테스트 작성
+   - MockAgentRunner의 모든 Agent 메서드 테스트
+   - 정상 입력, 빈 입력, 경계값 케이스 포함
+2. tests/integration/ 에 통합 테스트 작성
+   - FastAPI TestClient로 실제 API 엔드포인트 테스트
+   - Agent 실행, 목록 조회, 에러 응답 검증
+3. tests/conftest.py 에 공통 픽스처 작성
+   - 테스트 DB 설정, TestClient 픽스처
+
+완료 기준:
+- py -m pytest tests/ -v 실행 시 전체 PASS
+- 전체 Agent 57개 실행 검증 포함
+```
+
+---
+*본 테스트 자동화 계획서는 Miracle-Cowork AgentPack에 의해 자동 생성되었습니다. 실제 프로젝트 구조에 맞게 경로 및 모듈명을 수정하세요.*
 """
 
     # ── Phase 1-E: 기획/전략 문서 7개 Agent ─────────────────────────────────────
