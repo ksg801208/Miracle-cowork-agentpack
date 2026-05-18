@@ -7,10 +7,10 @@ from app.core.database import get_db
 from app.core.config import settings
 from app.models.models import AgentRun
 from app.schemas.schemas import AgentRunCreate, AgentRunResponse
-from app.agent_engine.mock_runner import MockAgentRunner
+from app.agent_engine.runner_factory import create_runner
 
 router = APIRouter()
-_runner = MockAgentRunner()
+_runner = create_runner()
 
 def load_agents():
     with open(settings.config_dir / "agents.json", "r", encoding="utf-8") as f:

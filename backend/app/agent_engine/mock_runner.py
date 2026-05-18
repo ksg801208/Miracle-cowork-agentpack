@@ -1,7 +1,8 @@
 from datetime import date
 from typing import Any, Dict
+from app.agent_engine.base_runner import AgentRunner
 
-class MockAgentRunner:
+class MockAgentRunner(AgentRunner):
     """Phase1A R&D Proposal Pack — upgraded Korean business document generators."""
 
     def run(self, agent_config: dict, input_payload: dict) -> dict:
