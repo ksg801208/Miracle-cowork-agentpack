@@ -742,13 +742,16 @@
     "area_id": "knowledge_document",
     "name_ko": "문서 요약",
     "name_en": "Document Summary",
-    "description": "긴 문서를 핵심 내용 중심으로 간결하게 요약합니다",
+    "description": "문서 개요·핵심 요약·주요 항목·의사결정 필요사항·후속 조치·활용 목적을 포함한 구조화된 요약문을 작성합니다",
     "priority": 1,
     "output_type": "document",
     "input_schema": {
-      "document_content": {"type": "textarea", "label": "원문 내용", "required": true, "placeholder": "요약할 문서 내용을 붙여넣기 하세요"},
+      "document_title": {"type": "text", "label": "문서 제목", "required": false, "placeholder": "예) 2024년 AI 업무자동화 시장 동향 보고서"},
+      "document_content": {"type": "textarea", "label": "원문 내용", "required": true, "placeholder": "요약할 문서 내용을 붙여넣기 하세요\n(최대 4000자 권장)"},
+      "document_type": {"type": "select", "label": "문서 유형", "required": false, "options": ["보고서", "제안서", "회의록", "기술문서", "연구논문", "기타"]},
       "summary_length": {"type": "select", "label": "요약 분량", "required": false, "options": ["1페이지 이내", "3줄 요약", "A4 2페이지"]},
-      "key_focus_areas": {"type": "text", "label": "중점 요약 항목", "required": false, "placeholder": "예) 결론, 시사점, 실행 계획"}
+      "key_focus_areas": {"type": "text", "label": "중점 요약 항목", "required": false, "placeholder": "예) 결론, 시사점, 실행 계획, 리스크"},
+      "intended_use": {"type": "text", "label": "요약본 활용 목적", "required": false, "placeholder": "예) 임원 보고, 팀 공유, 의사결정 참고"}
     },
     "prompt_template_path": "prompts/knowledge_document/document_summary.md",
     "review_rule_path": "schemas/review/knowledge_review.json",
@@ -759,13 +762,16 @@
     "area_id": "knowledge_document",
     "name_ko": "문서 비교",
     "name_en": "Document Comparison",
-    "description": "두 문서 또는 버전 간의 차이점과 공통점을 분석합니다",
+    "description": "두 문서의 공통점·차이점·누락 가능성·검토 의견을 체계적으로 분석합니다",
     "priority": 2,
     "output_type": "table",
     "input_schema": {
-      "document_a": {"type": "textarea", "label": "문서 A (기준)", "required": true, "placeholder": ""},
-      "document_b": {"type": "textarea", "label": "문서 B (비교)", "required": true, "placeholder": ""},
-      "comparison_criteria": {"type": "text", "label": "비교 기준", "required": false, "placeholder": "예) 내용, 구조, 수치, 조건"}
+      "document_title_a": {"type": "text", "label": "문서 A 제목 (기준)", "required": false, "placeholder": "예) 사업계획서 v1.0 (기존)"},
+      "document_a": {"type": "textarea", "label": "문서 A 내용 (기준)", "required": true, "placeholder": "비교 기준이 되는 문서 내용을 입력하세요"},
+      "document_title_b": {"type": "text", "label": "문서 B 제목 (비교)", "required": false, "placeholder": "예) 사업계획서 v2.0 (수정본)"},
+      "document_b": {"type": "textarea", "label": "문서 B 내용 (비교)", "required": true, "placeholder": "비교 대상 문서 내용을 입력하세요"},
+      "comparison_criteria": {"type": "text", "label": "비교 기준 항목", "required": false, "placeholder": "예) 내용, 구조, 수치, 조건, 일정"},
+      "reviewer": {"type": "text", "label": "검토자", "required": false, "placeholder": "예) 홍길동 (PM)"}
     },
     "prompt_template_path": "prompts/knowledge_document/document_comparison.md",
     "review_rule_path": "schemas/review/knowledge_review.json",
@@ -776,13 +782,15 @@
     "area_id": "knowledge_document",
     "name_ko": "자료 검색",
     "name_en": "Material Search & Organization",
-    "description": "특정 주제에 대한 자료를 체계적으로 정리하고 목록화합니다",
+    "description": "검색 질의·관련 문서 목록·근거 요약·활용 가능 문장·추가 확인 필요사항을 정리합니다",
     "priority": 3,
     "output_type": "list",
     "input_schema": {
-      "search_topic": {"type": "text", "label": "검색 주제", "required": true, "placeholder": "예) AI 업무자동화 사례"},
-      "search_scope": {"type": "text", "label": "검색 범위", "required": false, "placeholder": "예) 국내 사례, 2023년 이후"},
-      "format_preference": {"type": "select", "label": "정리 형식", "required": false, "options": ["목록형", "요약형", "카드형"]}
+      "search_topic": {"type": "text", "label": "검색 주제", "required": true, "placeholder": "예) AI 업무자동화 도입 사례 및 효과"},
+      "search_scope": {"type": "text", "label": "검색 범위", "required": false, "placeholder": "예) 국내외 사례, 제조업 중심"},
+      "search_purpose": {"type": "text", "label": "검색 목적", "required": false, "placeholder": "예) 제안서 근거 자료 수집, 시장조사 보고서 작성"},
+      "format_preference": {"type": "select", "label": "정리 형식", "required": false, "options": ["목록형", "요약형", "카드형"]},
+      "reference_period": {"type": "text", "label": "참고 기간", "required": false, "placeholder": "예) 2022년 이후, 최근 3년"}
     },
     "prompt_template_path": "prompts/knowledge_document/material_search.md",
     "review_rule_path": "schemas/review/knowledge_review.json",
@@ -793,14 +801,16 @@
     "area_id": "knowledge_document",
     "name_ko": "템플릿 생성",
     "name_en": "Template Creation",
-    "description": "업무에 활용할 문서 템플릿을 자동으로 생성합니다",
+    "description": "문서 목적·사용 대상·표준 목차·작성 가이드·필수 항목·재사용 가능한 본문 템플릿을 생성합니다",
     "priority": 4,
     "output_type": "document",
     "input_schema": {
-      "template_type": {"type": "text", "label": "템플릿 유형", "required": true, "placeholder": "예) 회의록, 주간보고, 제안서"},
-      "target_document": {"type": "text", "label": "목적 문서", "required": true, "placeholder": "예) 팀 내부용, 고객 제출용"},
-      "required_sections": {"type": "textarea", "label": "필수 포함 항목", "required": false, "placeholder": "반드시 포함되어야 할 섹션"},
-      "organization_name": {"type": "text", "label": "조직/회사명", "required": false, "placeholder": ""}
+      "template_type": {"type": "text", "label": "템플릿 유형", "required": true, "placeholder": "예) 회의록, 주간보고, 제안서, 품질검토 보고서"},
+      "target_document": {"type": "text", "label": "문서 목적", "required": true, "placeholder": "예) 고객 제안서, 내부 업무 보고, 정부 제출용"},
+      "target_audience": {"type": "text", "label": "사용 대상", "required": false, "placeholder": "예) 팀원, 외부 고객, 경영진"},
+      "required_sections": {"type": "textarea", "label": "필수 포함 항목", "required": false, "placeholder": "예) 제목, 일시, 참석자, 안건, 결정사항, 후속 조치"},
+      "organization_name": {"type": "text", "label": "조직/회사명", "required": false, "placeholder": "예) 주식회사 미라클코웍"},
+      "style_guide": {"type": "select", "label": "문서 스타일", "required": false, "options": ["공식 비즈니스 문서", "내부 실무 문서", "고객 제출용", "정부 공문 형식"]}
     },
     "prompt_template_path": "prompts/knowledge_document/template_creation.md",
     "review_rule_path": "schemas/review/knowledge_review.json",
@@ -811,13 +821,15 @@
     "area_id": "knowledge_document",
     "name_ko": "문서 품질검토",
     "name_en": "Document Quality Review",
-    "description": "문서의 완성도, 논리성, 일관성을 검토하고 개선 사항을 제안합니다",
+    "description": "오탈자·중복 표현·논리 불일치·근거 부족·과장 표현·개선 제안·최종 검토 의견을 제공합니다",
     "priority": 5,
     "output_type": "checklist",
     "input_schema": {
-      "document_content": {"type": "textarea", "label": "검토 대상 문서", "required": true, "placeholder": "품질 검토할 문서 내용"},
-      "review_criteria": {"type": "textarea", "label": "검토 기준", "required": false, "placeholder": "예) 논리성, 데이터 정확성, 문체 일관성"},
-      "document_type": {"type": "text", "label": "문서 유형", "required": false, "placeholder": "예) 사업계획서, 기술보고서"}
+      "document_title": {"type": "text", "label": "검토 대상 문서명", "required": false, "placeholder": "예) 2024 사업계획서 v2.0"},
+      "document_content": {"type": "textarea", "label": "검토 대상 문서 내용", "required": true, "placeholder": "품질 검토할 문서 내용을 입력하세요"},
+      "document_type": {"type": "text", "label": "문서 유형", "required": false, "placeholder": "예) 사업계획서, 기술보고서, 제안서"},
+      "review_criteria": {"type": "textarea", "label": "검토 기준", "required": false, "placeholder": "예) 논리성, 데이터 정확성, 문체 일관성, 근거 충분성"},
+      "reviewer": {"type": "text", "label": "검토자", "required": false, "placeholder": "예) 김연구 (QA 담당)"}
     },
     "prompt_template_path": "prompts/knowledge_document/quality_review.md",
     "review_rule_path": "schemas/review/knowledge_review.json",
@@ -828,14 +840,16 @@
     "area_id": "knowledge_document",
     "name_ko": "목차 자동생성",
     "name_en": "Table of Contents Auto-generation",
-    "description": "문서 주제와 유형에 맞는 체계적인 목차를 자동으로 생성합니다",
+    "description": "문서 목적·독자/제출처·권장 목차·항목별 작성 방향·필수/선택 포함 내용을 포함한 목차를 생성합니다",
     "priority": 6,
     "output_type": "document",
     "input_schema": {
       "document_topic": {"type": "text", "label": "문서 주제", "required": true, "placeholder": "예) AI 기반 업무자동화 솔루션 사업계획"},
       "document_type": {"type": "select", "label": "문서 유형", "required": true, "options": ["사업계획서", "기술보고서", "제안서", "연구보고서", "매뉴얼", "기타"]},
+      "audience": {"type": "text", "label": "독자 / 제출처", "required": false, "placeholder": "예) 정부 심사위원, 투자자, 내부 임원"},
       "depth_level": {"type": "select", "label": "목차 깊이", "required": false, "options": ["2단계 (장/절)", "3단계 (장/절/항)", "4단계 (장/절/항/목)"]},
-      "audience": {"type": "text", "label": "대상 독자", "required": false, "placeholder": "예) 정부 심사위원, 투자자, 내부 임원"}
+      "key_messages": {"type": "textarea", "label": "필수 포함 내용", "required": false, "placeholder": "반드시 목차에 포함되어야 할 내용\n예) 배경, 목표, 실행 계획, 기대 효과, 예산"},
+      "optional_sections": {"type": "text", "label": "선택 포함 내용", "required": false, "placeholder": "예) 부록, 참고문헌, 용어 정의, 조직도"}
     },
     "prompt_template_path": "prompts/knowledge_document/toc_generation.md",
     "review_rule_path": "schemas/review/knowledge_review.json",
@@ -846,14 +860,16 @@
     "area_id": "knowledge_document",
     "name_ko": "요약보고",
     "name_en": "Summary Report",
-    "description": "보고 목적에 맞는 간결하고 명확한 요약 보고서를 작성합니다",
+    "description": "1페이지 요약·주요 이슈·핵심 수치/성과·리스크·의사결정 요청사항·다음 실행계획을 포함한 경영진 보고용 요약보고서를 작성합니다",
     "priority": 7,
     "output_type": "document",
     "input_schema": {
-      "original_content": {"type": "textarea", "label": "원본 내용", "required": true, "placeholder": "보고할 원문 또는 핵심 내용"},
-      "report_purpose": {"type": "text", "label": "보고 목적", "required": true, "placeholder": "예) 주간 임원 보고, 대외 홍보용"},
-      "target_audience": {"type": "text", "label": "보고 대상", "required": false, "placeholder": "예) CEO, 이사회, 고객"},
-      "key_takeaways": {"type": "textarea", "label": "반드시 포함할 메시지", "required": false, "placeholder": ""}
+      "report_title": {"type": "text", "label": "보고 제목", "required": false, "placeholder": "예) 2024년 5월 프로젝트 현황 요약보고"},
+      "original_content": {"type": "textarea", "label": "원본 내용", "required": true, "placeholder": "보고할 원문 또는 핵심 내용을 입력하세요"},
+      "report_purpose": {"type": "text", "label": "보고 목적", "required": true, "placeholder": "예) 주간 임원 보고, 월간 경영 보고, 대외 홍보용"},
+      "target_audience": {"type": "text", "label": "보고 대상", "required": false, "placeholder": "예) CEO, 이사회, 투자자"},
+      "key_takeaways": {"type": "textarea", "label": "반드시 포함할 메시지", "required": false, "placeholder": "보고서에 반드시 담겨야 할 핵심 메시지를 입력하세요"},
+      "report_period": {"type": "text", "label": "보고 기간", "required": false, "placeholder": "예) 2024년 5월, 2024년 1분기"}
     },
     "prompt_template_path": "prompts/knowledge_document/summary_report.md",
     "review_rule_path": "schemas/review/knowledge_review.json",
