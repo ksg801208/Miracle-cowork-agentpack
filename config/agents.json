@@ -635,11 +635,15 @@
     "priority": 1,
     "output_type": "document",
     "input_schema": {
-      "customer_name": {"type": "text", "label": "고객사명", "required": true, "placeholder": ""},
-      "customer_pain_points": {"type": "textarea", "label": "고객 Pain Point", "required": true, "placeholder": "고객이 겪고 있는 문제와 니즈"},
-      "proposed_solution": {"type": "textarea", "label": "제안 솔루션", "required": true, "placeholder": "당사가 제공할 솔루션"},
-      "value_proposition": {"type": "textarea", "label": "핵심 가치 제안", "required": false, "placeholder": ""},
-      "pricing_summary": {"type": "text", "label": "가격 요약", "required": false, "placeholder": "예) 월 100만원 / 연 1,000만원"}
+      "customer_name": {"type": "text", "label": "고객사명", "required": true, "placeholder": "예) (주)ABC테크"},
+      "proposal_background": {"type": "textarea", "label": "제안 배경", "required": true, "placeholder": "고객사와의 관계, 제안 계기, 사전 협의 내용 등을 입력하세요"},
+      "customer_pain_points": {"type": "textarea", "label": "고객 요구사항 및 Pain Point", "required": true, "placeholder": "고객이 겪고 있는 핵심 문제, 불편함, 개선 희망 사항을 구체적으로 입력하세요"},
+      "proposal_objective": {"type": "textarea", "label": "제안 목표", "required": true, "placeholder": "이번 제안을 통해 달성하려는 정량적·정성적 목표를 입력하세요"},
+      "proposed_solution": {"type": "textarea", "label": "제안 솔루션", "required": true, "placeholder": "당사가 제공할 솔루션의 구성, 핵심 기능, 적용 방식을 입력하세요"},
+      "proposal_scope": {"type": "textarea", "label": "추진 범위", "required": false, "placeholder": "1단계/2단계 등 단계별 추진 범위 및 도입 순서를 입력하세요"},
+      "expected_effects": {"type": "textarea", "label": "기대효과", "required": false, "placeholder": "도입 후 예상되는 정량적·정성적 효과를 입력하세요"},
+      "timeline": {"type": "text", "label": "추진 일정", "required": false, "placeholder": "예) 2025.07 ~ 2025.12 (6개월)"},
+      "discussion_items": {"type": "textarea", "label": "협의 필요사항", "required": false, "placeholder": "계약 조건, 보안 정책, SLA 등 추가 협의가 필요한 항목을 입력하세요"}
     },
     "prompt_template_path": "prompts/proposal_sales/customer_proposal.md",
     "review_rule_path": "schemas/review/sales_review.json",
@@ -654,12 +658,14 @@
     "priority": 2,
     "output_type": "document",
     "input_schema": {
-      "company_name": {"type": "text", "label": "회사명", "required": true, "placeholder": ""},
-      "founding_year": {"type": "text", "label": "설립 연도", "required": false, "placeholder": "예) 2018년"},
-      "business_domain": {"type": "textarea", "label": "사업 분야", "required": true, "placeholder": "주요 사업 영역 설명"},
-      "key_products": {"type": "textarea", "label": "주요 제품/서비스", "required": true, "placeholder": ""},
-      "achievements": {"type": "textarea", "label": "주요 실적 및 레퍼런스", "required": false, "placeholder": "수상, 인증, 주요 고객사 등"},
-      "contact": {"type": "text", "label": "연락처", "required": false, "placeholder": "전화번호, 이메일, 홈페이지"}
+      "company_name": {"type": "text", "label": "회사명", "required": true, "placeholder": "예) (주)미라클코워크"},
+      "founding_year": {"type": "text", "label": "설립 연도", "required": false, "placeholder": "예) 2022년"},
+      "business_domain": {"type": "textarea", "label": "핵심 사업영역", "required": true, "placeholder": "주요 사업 분야, 타겟 고객군, 서비스 범위를 입력하세요"},
+      "core_technology": {"type": "textarea", "label": "보유 기술", "required": true, "placeholder": "핵심 기술 스택, 특허, 독점 기술, 인증 등을 입력하세요"},
+      "key_products": {"type": "textarea", "label": "주요 제품/서비스", "required": true, "placeholder": "대표 제품·서비스명과 핵심 기능을 입력하세요"},
+      "achievements": {"type": "textarea", "label": "수행 실적 및 레퍼런스", "required": false, "placeholder": "주요 고객사, 수주 실적, 수상·인증 내역 등을 입력하세요"},
+      "cooperation_areas": {"type": "textarea", "label": "협력 가능 분야", "required": false, "placeholder": "파트너십, 공동 수주, 기술 제휴 등 협력 가능한 영역을 입력하세요"},
+      "contact": {"type": "text", "label": "연락처", "required": false, "placeholder": "홈페이지, 이메일, 전화번호"}
     },
     "prompt_template_path": "prompts/proposal_sales/company_introduction.md",
     "review_rule_path": "schemas/review/sales_review.json",
@@ -674,11 +680,15 @@
     "priority": 3,
     "output_type": "document",
     "input_schema": {
-      "product_name": {"type": "text", "label": "제품/서비스명", "required": true, "placeholder": ""},
-      "target_customers": {"type": "text", "label": "목표 고객", "required": true, "placeholder": ""},
-      "key_features": {"type": "textarea", "label": "핵심 기능", "required": true, "placeholder": "주요 기능 목록"},
-      "differentiators": {"type": "textarea", "label": "차별화 요소", "required": false, "placeholder": "경쟁 제품 대비 우위"},
-      "pricing": {"type": "text", "label": "가격 정책", "required": false, "placeholder": ""}
+      "product_name": {"type": "text", "label": "제품/서비스명", "required": true, "placeholder": "예) Miracle-Cowork AgentPack"},
+      "target_customers": {"type": "textarea", "label": "목표 고객", "required": true, "placeholder": "주요 타겟 고객군, 업종, 규모, 사용 목적 등을 입력하세요"},
+      "key_features": {"type": "textarea", "label": "주요 기능", "required": true, "placeholder": "제품의 핵심 기능 목록을 입력하세요 (기능명과 설명)"},
+      "applied_technology": {"type": "textarea", "label": "적용 기술", "required": false, "placeholder": "사용된 핵심 기술, 프레임워크, 인프라 등을 입력하세요"},
+      "product_composition": {"type": "textarea", "label": "제품 구성", "required": false, "placeholder": "모듈 구성, 패키지 구성, 시스템 아키텍처 등을 입력하세요"},
+      "differentiators": {"type": "textarea", "label": "차별성", "required": false, "placeholder": "경쟁 제품 대비 핵심 우위, 특허, 독점 기능 등을 입력하세요"},
+      "application_fields": {"type": "textarea", "label": "적용 분야", "required": false, "placeholder": "활용 가능한 업종, 업무 영역, 사용 사례를 입력하세요"},
+      "expected_effects": {"type": "textarea", "label": "기대효과", "required": false, "placeholder": "도입 후 정량적·정성적 기대효과를 입력하세요"},
+      "adoption_procedure": {"type": "textarea", "label": "도입 절차", "required": false, "placeholder": "예) 상담 → 계약 → 환경구축 → 교육 → 운영"}
     },
     "prompt_template_path": "prompts/proposal_sales/product_introduction.md",
     "review_rule_path": "schemas/review/sales_review.json",
@@ -693,10 +703,13 @@
     "priority": 4,
     "output_type": "document",
     "input_schema": {
-      "customer_name": {"type": "text", "label": "고객사명", "required": true, "placeholder": ""},
-      "project_scope": {"type": "textarea", "label": "프로젝트 범위", "required": true, "placeholder": "개발/서비스 범위 설명"},
-      "cost_breakdown": {"type": "textarea", "label": "비용 내역", "required": true, "placeholder": "항목별 비용을 입력하세요"},
-      "terms_and_conditions": {"type": "textarea", "label": "계약 조건", "required": false, "placeholder": "납기, 지급 조건, 하자보수 등"}
+      "customer_name": {"type": "text", "label": "고객사명", "required": true, "placeholder": "예) (주)ABC테크"},
+      "supply_scope": {"type": "textarea", "label": "공급 범위", "required": true, "placeholder": "납품 또는 서비스 제공 범위를 구체적으로 입력하세요"},
+      "cost_breakdown": {"type": "textarea", "label": "세부 항목 및 금액", "required": true, "placeholder": "항목명 / 단가 / 수량 / 금액 형태로 입력하세요"},
+      "delivery_date": {"type": "text", "label": "납기", "required": false, "placeholder": "예) 계약 후 4주 이내"},
+      "payment_terms": {"type": "textarea", "label": "지급 조건", "required": false, "placeholder": "예) 계약금 30% / 중도금 40% / 잔금 30%"},
+      "validity_period": {"type": "text", "label": "유효기간", "required": false, "placeholder": "예) 견적 발행일로부터 30일"},
+      "special_notes": {"type": "textarea", "label": "특이사항", "required": false, "placeholder": "VAT 포함 여부, 추가 조건, 하자보수 정책 등을 입력하세요"}
     },
     "prompt_template_path": "prompts/proposal_sales/quote_proposal.md",
     "review_rule_path": "schemas/review/sales_review.json",
@@ -711,10 +724,13 @@
     "priority": 5,
     "output_type": "checklist",
     "input_schema": {
-      "customer_name": {"type": "text", "label": "고객사명", "required": true, "placeholder": ""},
-      "meeting_purpose": {"type": "text", "label": "미팅 목적", "required": true, "placeholder": "예) 솔루션 제안, 계약 협의"},
-      "customer_background": {"type": "textarea", "label": "고객사 배경 정보", "required": false, "placeholder": "사업 분야, 규모, 주요 니즈 등"},
-      "key_discussion_points": {"type": "textarea", "label": "핵심 논의 안건", "required": false, "placeholder": "미팅에서 다룰 주요 내용"}
+      "customer_name": {"type": "text", "label": "고객사명", "required": true, "placeholder": "예) (주)ABC테크"},
+      "meeting_purpose": {"type": "text", "label": "미팅 목적", "required": true, "placeholder": "예) 솔루션 제안, 계약 협의, 도입 결과 공유"},
+      "customer_background": {"type": "textarea", "label": "고객사 개요", "required": true, "placeholder": "사업 분야, 규모, 현황, 주요 담당자 등을 입력하세요"},
+      "expected_needs": {"type": "textarea", "label": "예상 고객 니즈", "required": false, "placeholder": "고객이 원하는 것, 해결하고 싶은 문제, 우선순위 등을 입력하세요"},
+      "proposal_points": {"type": "textarea", "label": "핵심 제안 포인트", "required": false, "placeholder": "미팅에서 강조할 핵심 메시지, 차별화 포인트, 레퍼런스 등을 입력하세요"},
+      "check_items": {"type": "textarea", "label": "확인 필요사항", "required": false, "placeholder": "예산, 결정권자 참석 여부, 기존 시스템 현황 등 파악해야 할 항목을 입력하세요"},
+      "followup_actions": {"type": "textarea", "label": "미팅 후 후속조치", "required": false, "placeholder": "미팅 완료 후 진행할 액션 아이템 (제안서 발송, 데모 일정 등)을 입력하세요"}
     },
     "prompt_template_path": "prompts/proposal_sales/customer_meeting_prep.md",
     "review_rule_path": "schemas/review/sales_review.json",
@@ -729,8 +745,13 @@
     "priority": 6,
     "output_type": "document",
     "input_schema": {
-      "customer_inquiry": {"type": "textarea", "label": "고객 문의 내용", "required": true, "placeholder": "고객이 보낸 문의 내용"},
-      "response_key_points": {"type": "textarea", "label": "답변 핵심 내용", "required": true, "placeholder": "전달하려는 주요 내용"},
+      "recipient_name": {"type": "text", "label": "수신자 이름", "required": true, "placeholder": "예) 홍길동 팀장님"},
+      "recipient_company": {"type": "text", "label": "수신자 회사명", "required": true, "placeholder": "예) (주)ABC테크"},
+      "customer_inquiry": {"type": "textarea", "label": "고객 문의 내용", "required": true, "placeholder": "고객이 문의한 내용을 요약하거나 그대로 붙여넣으세요"},
+      "response_key_points": {"type": "textarea", "label": "주요 답변 내용", "required": true, "placeholder": "고객 문의에 대한 핵심 답변 내용을 입력하세요"},
+      "guidance_items": {"type": "textarea", "label": "제안/안내 사항", "required": false, "placeholder": "추가 제안, 다음 단계 안내, 데모 제안 등을 입력하세요"},
+      "attachments": {"type": "textarea", "label": "첨부 또는 후속자료", "required": false, "placeholder": "첨부할 자료명 또는 추가 제공 예정 자료를 입력하세요"},
+      "next_schedule": {"type": "text", "label": "후속 일정 제안", "required": false, "placeholder": "예) 이번 주 중 30분 통화 또는 다음 주 미팅"},
       "tone": {"type": "select", "label": "이메일 톤", "required": false, "options": ["정중하고 공손하게", "친근하고 격식있게", "비즈니스 공식체"]},
       "sender_info": {"type": "text", "label": "발신자 정보", "required": false, "placeholder": "이름, 직책, 회사명"}
     },
@@ -747,12 +768,14 @@
     "priority": 7,
     "output_type": "document",
     "input_schema": {
-      "customer_name": {"type": "text", "label": "고객사명", "required": true, "placeholder": ""},
-      "poc_objective": {"type": "textarea", "label": "PoC 목적", "required": true, "placeholder": "검증하려는 가설 및 목적"},
-      "scope": {"type": "textarea", "label": "PoC 범위", "required": true, "placeholder": "검증할 기능 및 범위"},
-      "duration": {"type": "text", "label": "PoC 기간", "required": true, "placeholder": "예) 4주"},
-      "success_criteria": {"type": "textarea", "label": "성공 기준", "required": false, "placeholder": "PoC 성공 판단 기준"},
-      "cost": {"type": "text", "label": "PoC 비용", "required": false, "placeholder": "예) 무상 / 500만원"}
+      "customer_name": {"type": "text", "label": "고객사명", "required": true, "placeholder": "예) (주)ABC테크"},
+      "poc_background": {"type": "textarea", "label": "PoC 추진 배경", "required": true, "placeholder": "PoC를 추진하게 된 배경, 고객사의 도입 검토 맥락을 입력하세요"},
+      "verification_scope": {"type": "textarea", "label": "검증 범위", "required": true, "placeholder": "검증할 기능, 시나리오, 데이터 범위를 구체적으로 입력하세요"},
+      "duration": {"type": "text", "label": "수행 일정 (기간)", "required": true, "placeholder": "예) 4주 (2025.07.01 ~ 2025.07.28)"},
+      "role_division": {"type": "textarea", "label": "역할 분담", "required": false, "placeholder": "고객사와 당사의 역할 분담, 각자 제공할 리소스·데이터를 입력하세요"},
+      "verification_metrics": {"type": "textarea", "label": "검증 지표 (KPI)", "required": false, "placeholder": "정확도, 처리 속도, 사용자 만족도 등 측정 지표를 입력하세요"},
+      "success_criteria": {"type": "textarea", "label": "성공 기준", "required": false, "placeholder": "PoC 성공으로 판단하는 구체적인 수치 기준을 입력하세요"},
+      "commercialization_direction": {"type": "textarea", "label": "후속 사업화 방향", "required": false, "placeholder": "PoC 성공 후 전사 도입, 계약 범위, 추진 로드맵 등을 입력하세요"}
     },
     "prompt_template_path": "prompts/proposal_sales/poc_proposal.md",
     "review_rule_path": "schemas/review/sales_review.json",
