@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import engine, Base
-from app.api import areas, agents, projects, agent_runs, documents, tasks
+from app.api import areas, agents, projects, agent_runs, documents, tasks, auth
 
 # 테이블 자동 생성
 Base.metadata.create_all(bind=engine)
@@ -22,6 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router, prefix="/api", tags=["Auth"])
 app.include_router(areas.router, prefix="/api", tags=["Areas"])
 app.include_router(agents.router, prefix="/api", tags=["Agents"])
 app.include_router(projects.router, prefix="/api", tags=["Projects"])

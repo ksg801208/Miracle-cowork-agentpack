@@ -1,7 +1,37 @@
 import axios from 'axios';
-import type { Area, Agent, Project, AgentRun, Document, Task } from '../types';
+import type { Area, Agent, Project, AgentRun, Document, Task, User } from '../types';
+import { getStoredToken } from '../contexts/AuthContext';
 
 const http = axios.create({ baseURL: '/api' });
+
+// 모든 요청에 Authorization 헤더 자동 첨부
+http.interceptors.request.use((config) => {
+  const token = getStoredToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
+
+// 401 응답 시 로컬스토리지 초기화 후 로그인 페이지로 리다이렉트
+http.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401 && !window.location.pathname.includes('/login')) {
+      localStorage.removeItem('miracle_token');
+      localStorage.removeItem('miracle_user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(err);
+  }
+);
+
+export const authApi = {
+  login: (email: string, password: string) =>
+    http.post<{ access_token: string; token_type: string; user: User }>('/auth/login', { email, password }).then(r => r.data),
+  me: () =>
+    http.get<User>('/auth/me').then(r => r.data),
+  logout: () =>
+    http.post('/auth/logout').then(r => r.data),
+};
 
 export const areasApi = {
   getAll: (): Promise<Area[]> => http.get('/areas').then(r => r.data),
