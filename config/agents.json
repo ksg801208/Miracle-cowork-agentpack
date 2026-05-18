@@ -201,10 +201,14 @@
     "priority": 1,
     "output_type": "document",
     "input_schema": {
-      "project_name": {"type": "text", "label": "과제명", "required": true, "placeholder": ""},
-      "background": {"type": "textarea", "label": "추진 배경 및 필요성", "required": true, "placeholder": ""},
-      "objectives": {"type": "textarea", "label": "목표 및 범위", "required": true, "placeholder": ""},
-      "timeline": {"type": "text", "label": "추진 일정", "required": false, "placeholder": "예) 2024.07 ~ 2025.06"}
+      "project_name": {"type": "text", "label": "과제명", "required": true, "placeholder": "예) AI 기반 업무자동화 플랫폼 개발"},
+      "background": {"type": "textarea", "label": "추진 배경 및 필요성", "required": true, "placeholder": "과제를 추진하게 된 배경, 시장 동향, 정책적 필요성 등을 입력하세요"},
+      "problem_definition": {"type": "textarea", "label": "해결 과제 및 문제 정의", "required": true, "placeholder": "현재 해결해야 할 핵심 문제 또는 기술적 과제를 입력하세요"},
+      "objectives": {"type": "textarea", "label": "목표 및 범위", "required": true, "placeholder": "과제의 정량적·정성적 목표, 개발 범위를 입력하세요"},
+      "key_contents": {"type": "textarea", "label": "핵심 개발 내용", "required": false, "placeholder": "주요 개발 항목, 기술 요소, 구성 모듈 등을 입력하세요"},
+      "strategy": {"type": "textarea", "label": "추진 전략", "required": false, "placeholder": "단계별 추진 방식, 협력 기관, 기술 확보 전략 등을 입력하세요"},
+      "expected_effects": {"type": "textarea", "label": "기대 효과", "required": false, "placeholder": "사업화 효과, 기술적 파급효과, 사회적 기여 등을 입력하세요"},
+      "timeline": {"type": "text", "label": "추진 일정", "required": false, "placeholder": "예) 2024.07 ~ 2025.06 (1년)"}
     },
     "prompt_template_path": "prompts/planning_strategy/project_planning.md",
     "review_rule_path": "schemas/review/planning_review.json",
@@ -219,10 +223,13 @@
     "priority": 2,
     "output_type": "document",
     "input_schema": {
-      "business_domain": {"type": "text", "label": "사업 분야", "required": true, "placeholder": ""},
-      "current_status": {"type": "textarea", "label": "현재 사업 현황", "required": true, "placeholder": ""},
-      "target_market": {"type": "textarea", "label": "목표 시장", "required": false, "placeholder": ""},
-      "goals": {"type": "textarea", "label": "전략 목표 (3개년)", "required": false, "placeholder": ""}
+      "business_name": {"type": "text", "label": "사업/서비스명", "required": true, "placeholder": "예) Miracle-Cowork AgentPack"},
+      "business_domain": {"type": "text", "label": "사업 분야", "required": true, "placeholder": "예) AI SaaS, 스마트팩토리, 헬스케어 IT"},
+      "current_status": {"type": "textarea", "label": "현재 사업 현황", "required": true, "placeholder": "현재 매출, 고객 수, 주요 제품/서비스 현황, 조직 규모 등을 입력하세요"},
+      "target_market": {"type": "textarea", "label": "목표 시장 및 고객군", "required": true, "placeholder": "주요 타겟 시장, 고객 세그먼트, 지역 범위 등을 입력하세요"},
+      "key_competitors": {"type": "textarea", "label": "주요 경쟁사 및 경쟁 환경", "required": false, "placeholder": "주요 경쟁사명과 각 사의 특징을 입력하세요"},
+      "goals": {"type": "textarea", "label": "전략 목표 (3개년)", "required": false, "placeholder": "매출 목표, 시장점유율, 기술 확보 등 정량·정성 목표를 입력하세요"},
+      "strategy_period": {"type": "text", "label": "전략 수립 기간", "required": false, "placeholder": "예) 2025 ~ 2027 (3개년)"}
     },
     "prompt_template_path": "prompts/planning_strategy/business_strategy.md",
     "review_rule_path": "schemas/review/planning_review.json",
@@ -237,9 +244,12 @@
     "priority": 3,
     "output_type": "document",
     "input_schema": {
-      "service_description": {"type": "textarea", "label": "서비스/제품 설명", "required": true, "placeholder": ""},
-      "target_customers": {"type": "textarea", "label": "목표 고객 세그먼트", "required": true, "placeholder": ""},
-      "value_proposition": {"type": "textarea", "label": "핵심 가치 제안", "required": false, "placeholder": ""}
+      "service_name": {"type": "text", "label": "서비스/제품명", "required": true, "placeholder": "예) AI 자동화 업무 보조 플랫폼"},
+      "service_description": {"type": "textarea", "label": "서비스/제품 설명", "required": true, "placeholder": "제공하는 서비스 또는 제품의 핵심 기능과 특징을 설명하세요"},
+      "target_customers": {"type": "textarea", "label": "목표 고객 세그먼트", "required": true, "placeholder": "주요 고객군, 업종, 규모, 사용 목적 등을 입력하세요"},
+      "value_proposition": {"type": "textarea", "label": "핵심 가치 제안", "required": true, "placeholder": "고객이 얻는 핵심 혜택, 차별화 포인트를 입력하세요"},
+      "revenue_model": {"type": "textarea", "label": "수익 모델", "required": false, "placeholder": "예) 월정액 구독, 사용량 기반 과금, 라이선스 판매 등"},
+      "key_partners": {"type": "textarea", "label": "핵심 파트너", "required": false, "placeholder": "사업 운영에 필요한 주요 파트너사, 공급자, 협력 기관 등을 입력하세요"}
     },
     "prompt_template_path": "prompts/planning_strategy/business_model.md",
     "review_rule_path": "schemas/review/planning_review.json",
@@ -254,9 +264,11 @@
     "priority": 4,
     "output_type": "document",
     "input_schema": {
-      "market_domain": {"type": "text", "label": "시장/산업 분야", "required": true, "placeholder": "예) 국내 AI SaaS 시장"},
-      "target_period": {"type": "text", "label": "분석 기준 연도", "required": false, "placeholder": "예) 2024"},
-      "research_scope": {"type": "textarea", "label": "조사 범위 및 항목", "required": false, "placeholder": "시장 규모, 성장률, 주요 플레이어 등"}
+      "market_domain": {"type": "text", "label": "시장/산업 분야", "required": true, "placeholder": "예) 국내 AI SaaS 시장, 스마트팩토리 솔루션"},
+      "target_region": {"type": "text", "label": "조사 대상 지역", "required": true, "placeholder": "예) 국내, 국내+동남아, 글로벌"},
+      "research_purpose": {"type": "textarea", "label": "조사 목적 및 배경", "required": true, "placeholder": "시장조사를 통해 파악하고자 하는 핵심 질문이나 의사결정 사항을 입력하세요"},
+      "target_period": {"type": "text", "label": "분석 기준 연도", "required": false, "placeholder": "예) 2024~2025"},
+      "research_scope": {"type": "textarea", "label": "조사 범위 및 항목", "required": false, "placeholder": "예) 시장 규모, 성장률, 주요 플레이어, 기술 트렌드, 고객 니즈"}
     },
     "prompt_template_path": "prompts/planning_strategy/market_research.md",
     "review_rule_path": "schemas/review/planning_review.json",
@@ -265,15 +277,17 @@
   {
     "agent_id": "competitive_analysis",
     "area_id": "planning_strategy",
-    "name_ko": "경쟁분석 보고서",
-    "name_en": "Competitive Analysis Report",
-    "description": "경쟁사 및 유사 서비스 대비 당사의 경쟁 우위를 분석합니다",
+    "name_ko": "SWOT 분석",
+    "name_en": "SWOT Analysis",
+    "description": "자사의 강점·약점·기회·위협 요인을 분석하고 전략적 시사점을 도출합니다",
     "priority": 5,
-    "output_type": "table",
+    "output_type": "document",
     "input_schema": {
-      "our_product": {"type": "textarea", "label": "당사 제품/서비스 특징", "required": true, "placeholder": ""},
-      "competitors": {"type": "textarea", "label": "주요 경쟁사 목록", "required": true, "placeholder": "한 줄에 하나씩 입력"},
-      "comparison_criteria": {"type": "textarea", "label": "비교 기준 항목", "required": false, "placeholder": "예) 가격, 기능, UI, 지원, 확장성"}
+      "company_name": {"type": "text", "label": "회사/사업명", "required": true, "placeholder": "예) Miracle-Cowork AgentPack"},
+      "strengths": {"type": "textarea", "label": "강점 (Strengths)", "required": true, "placeholder": "내부 역량, 보유 기술, 차별화 요소, 핵심 인재 등 경쟁우위 요소를 입력하세요"},
+      "weaknesses": {"type": "textarea", "label": "약점 (Weaknesses)", "required": true, "placeholder": "내부 한계, 부족한 자원, 개선이 필요한 영역 등을 입력하세요"},
+      "opportunities": {"type": "textarea", "label": "기회 (Opportunities)", "required": true, "placeholder": "시장 트렌드, 정책 지원, 신기술 등 외부 기회 요인을 입력하세요"},
+      "threats": {"type": "textarea", "label": "위협 (Threats)", "required": true, "placeholder": "경쟁 심화, 규제 변화, 기술 대체 등 외부 위협 요인을 입력하세요"}
     },
     "prompt_template_path": "prompts/planning_strategy/competitive_analysis.md",
     "review_rule_path": "schemas/review/planning_review.json",
@@ -288,10 +302,13 @@
     "priority": 6,
     "output_type": "document",
     "input_schema": {
-      "company_name": {"type": "text", "label": "회사명", "required": true, "placeholder": ""},
-      "business_summary": {"type": "textarea", "label": "사업 요약", "required": true, "placeholder": "핵심 사업 내용 및 가치 제안"},
-      "financials_summary": {"type": "textarea", "label": "재무 현황 요약", "required": false, "placeholder": "매출, 성장률, 투자 현황 등"},
-      "growth_plan": {"type": "textarea", "label": "성장 계획", "required": false, "placeholder": "향후 3년 사업 계획 및 목표"}
+      "company_name": {"type": "text", "label": "회사명", "required": true, "placeholder": "예) (주)미라클코워크"},
+      "business_summary": {"type": "textarea", "label": "사업 요약", "required": true, "placeholder": "핵심 사업 내용, 해결하는 문제, 주요 가치 제안을 2~3문장으로 입력하세요"},
+      "target_investors": {"type": "textarea", "label": "목표 투자자 유형", "required": true, "placeholder": "예) 시리즈A VC, 전략적 투자자(CVC), 정부 투자기관 등"},
+      "funding_amount": {"type": "text", "label": "목표 투자 유치 금액", "required": true, "placeholder": "예) 30억원 (Pre-A 라운드)"},
+      "competitive_advantage": {"type": "textarea", "label": "기술/사업 경쟁우위", "required": false, "placeholder": "특허, 독점 기술, 데이터 자산, 고객 Lock-in 요소 등을 입력하세요"},
+      "financials_summary": {"type": "textarea", "label": "재무 현황 요약", "required": false, "placeholder": "현재 매출, 성장률, 영업이익, 투자 현황 등을 입력하세요"},
+      "growth_plan": {"type": "textarea", "label": "성장 계획", "required": false, "placeholder": "투자금 사용 계획, 향후 3년 목표, 엑시트 전략 등을 입력하세요"}
     },
     "prompt_template_path": "prompts/planning_strategy/ir_draft.md",
     "review_rule_path": "schemas/review/planning_review.json",
@@ -306,9 +323,13 @@
     "priority": 7,
     "output_type": "document",
     "input_schema": {
-      "partner_company": {"type": "text", "label": "파트너사명", "required": true, "placeholder": ""},
-      "proposed_collaboration": {"type": "textarea", "label": "협업 내용 및 방식", "required": true, "placeholder": ""},
-      "mutual_benefits": {"type": "textarea", "label": "상호 기대 효과", "required": false, "placeholder": ""}
+      "our_company": {"type": "text", "label": "당사명", "required": true, "placeholder": "예) (주)미라클코워크"},
+      "partner_company": {"type": "text", "label": "파트너사명", "required": true, "placeholder": "예) (주)ABC테크"},
+      "our_strengths": {"type": "textarea", "label": "당사 강점 및 보유 역량", "required": true, "placeholder": "기술력, 시장 접근성, 고객 네트워크, 특허 등 당사가 제공할 수 있는 핵심 가치를 입력하세요"},
+      "partner_strengths": {"type": "textarea", "label": "파트너사 강점 및 보유 역량", "required": true, "placeholder": "파트너사가 보유한 기술, 유통망, 자본력, 브랜드 등 협업 시너지 요소를 입력하세요"},
+      "proposed_collaboration": {"type": "textarea", "label": "협업 내용 및 방식", "required": true, "placeholder": "공동 개발, 공동 마케팅, JV 설립 등 구체적인 협업 형태와 역할 분담을 입력하세요"},
+      "revenue_sharing": {"type": "textarea", "label": "수익 배분 및 투자 구조", "required": false, "placeholder": "수익 배분 비율, 투자 규모, 지분 구조 등을 입력하세요"},
+      "mutual_benefits": {"type": "textarea", "label": "상호 기대 효과", "required": false, "placeholder": "협업을 통해 양사가 얻게 될 사업적·기술적 효과를 입력하세요"}
     },
     "prompt_template_path": "prompts/planning_strategy/jv_proposal.md",
     "review_rule_path": "schemas/review/planning_review.json",
