@@ -3,8 +3,8 @@
   "routes": [
     {
       "route_id": "govt_rd_full",
-      "name": "정부 R&D 완전 패키지",
-      "description": "공고문 분석부터 최종 제출까지 전 단계 자동화",
+      "name": "R&D 과제 핵심 문서 작성 패키지",
+      "description": "현재 실행 가능한 Agent를 활용한 R&D 과제 핵심 문서 일괄 생성 (공고분석→사업계획→R&D계획→평가대응→예산→WBS→검토)",
       "steps": [
         "government_announcement_analysis",
         "application_eligibility_review",
@@ -13,7 +13,6 @@
         "evaluation_criteria_response",
         "budget_calculation",
         "wbs_schedule",
-        "submission_checklist",
         "final_submission_review"
       ]
     },

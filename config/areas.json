@@ -1,11 +1,11 @@
 [
   {
     "area_id": "government_rd",
-    "name_ko": "정부 R&D / 지원사업 대응",
-    "name_en": "Government R&D Support",
+    "name_ko": "AI 정부R&D 컨설턴트 플랫폼",
+    "name_en": "AI Government R&D Consultant",
     "icon_key": "government",
     "display_order": 1,
-    "description": "정부 R&D 과제 및 지원사업 신청을 위한 공고문 분석, 사업계획서, 연구개발계획서 등 핵심 문서 자동 작성",
+    "description": "공고문 분석부터 최종 제출까지 8단계 워크플로우로 정부 R&D 과제 신청을 AI가 단계별 컨설팅",
     "agent_count": 10,
     "color": "#1E40AF"
   },

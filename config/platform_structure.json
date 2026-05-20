@@ -1,0 +1,85 @@
+{
+  "version": "1.1.0",
+  "platform_name": "AI 정부R&D 컨설턴트 플랫폼",
+  "platform_name_en": "AI Government R&D Consultant Platform",
+  "area_id": "government_rd",
+  "description": "공고문 분석부터 최종 발표까지 8단계 AI 컨설팅 워크플로우로 정부 R&D 과제 신청을 단계별 지원",
+  "workflow": {
+    "name": "AI 정부R&D 컨설턴트 대표 8단계 워크플로우",
+    "total_steps": 8,
+    "steps": [
+      {
+        "step": 1,
+        "agent_id": null,
+        "name_ko": "정부지원사업 탐색",
+        "name_en": "Government Support Search",
+        "description": "공고 DB 연동으로 적합한 지원사업 자동 탐색 및 추천",
+        "status": "planned",
+        "status_label": "v1.2 예정"
+      },
+      {
+        "step": 2,
+        "agent_id": "government_announcement_analysis",
+        "name_ko": "공고문 분석",
+        "name_en": "Announcement Analysis",
+        "description": "공고문 핵심 요건, 지원 자격, 평가 기준 자동 분석",
+        "status": "active",
+        "status_label": null
+      },
+      {
+        "step": 3,
+        "agent_id": null,
+        "name_ko": "Local RAG",
+        "name_en": "Local RAG",
+        "description": "사내 기술문서·과거 과제를 RAG로 연결해 맞춤형 컨텍스트 제공",
+        "status": "pending",
+        "status_label": "준비 중"
+      },
+      {
+        "step": 4,
+        "agent_id": "business_plan_writing",
+        "name_ko": "사업계획서 작성",
+        "name_en": "Business Plan Writing",
+        "description": "과제 목표, 필요성, 추진전략 중심의 사업계획서 초안 생성",
+        "status": "active",
+        "status_label": null
+      },
+      {
+        "step": 5,
+        "agent_id": "rd_plan_writing",
+        "name_ko": "연구개발계획서 작성",
+        "name_en": "R&D Plan Writing",
+        "description": "기술개발 내용, 방법론, 단계별 목표 기술",
+        "status": "active",
+        "status_label": null
+      },
+      {
+        "step": 6,
+        "agent_id": "final_submission_review",
+        "name_ko": "LLM 검증",
+        "name_en": "LLM Verification",
+        "description": "LLM 기반 문서 완성도·일관성·논리성 자동 검증",
+        "status": "active",
+        "status_label": null
+      },
+      {
+        "step": 7,
+        "agent_id": "evaluation_criteria_response",
+        "name_ko": "평가 최적화",
+        "name_en": "Evaluation Optimization",
+        "description": "평가 항목별 대응 근거 보강 및 점수 최적화 전략",
+        "status": "active",
+        "status_label": null
+      },
+      {
+        "step": 8,
+        "agent_id": null,
+        "name_ko": "발표자료 작성",
+        "name_en": "Presentation Writing",
+        "description": "발표 심사용 PPT 구성 및 핵심 메시지 자동 생성",
+        "status": "planned",
+        "status_label": "v1.2 예정"
+      }
+    ]
+  }
+}
