@@ -78,7 +78,7 @@ export default function ProjectList() {
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">선택 안 함</option>
-                <option value="government_rd">정부 R&D</option>
+                <option value="government_rd">AI 정부R&D 컨설턴트</option>
                 <option value="planning">기획/전략</option>
                 <option value="development">소프트웨어 개발</option>
                 <option value="sales">영업/제안</option>
