@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { agentsApi, areasApi, projectsApi, documentsApi } from '../services/api';
 import type { Agent, Area, Project, AgentRun as AgentRunType } from '../types';
@@ -36,24 +36,77 @@ function safeProgramUrl(url?: string): string | null {
   return url.startsWith('https://') || url.startsWith('http://') ? url : null;
 }
 
+// announcement_text 필드용 구조화 텍스트 생성
+function buildPrefillText(p: SelectedProgram, dDay: number): string {
+  const ddayStr = dDay < 0 ? '마감' : dDay === 0 ? 'D-Day' : `D-${dDay}`;
+  return [
+    '[선택 공고 정보]',
+    '',
+    `사업명: ${p.program_name}`,
+    `출처: ${p.source}`,
+    `주관기관: ${p.organization}`,
+    `지원금 규모: ${p.support_amount}`,
+    `마감일: ${p.deadline} (${ddayStr})`,
+    `적합도 점수: ${p.fit_score}점`,
+    '',
+    '[추천 사유]',
+    p.recommendation_reason,
+    '',
+    '[준비자료]',
+    ...p.required_documents.map(d => `• ${d}`),
+    '',
+    '[신청 유의사항]',
+    p.application_notes,
+    '',
+    '[링크]',
+    `출처 사이트: ${p.source_portal_url ?? '-'}`,
+    `공고문 원문: ${p.announcement_url ?? '-'}`,
+  ].join('\n');
+}
+
+// government_announcement_analysis input_schema 필드 기준 prefill 데이터 생성
+// 필드 ID: config/agents.json → government_announcement_analysis.input_schema
+function buildPrefillData(p: SelectedProgram, dDay: number): Record<string, string> {
+  return {
+    announcement_title:  p.program_name,             // 공고명 (text, required)
+    announcement_text:   buildPrefillText(p, dDay),  // 공고문 내용 (textarea, required)
+    support_program:     p.source,                   // 지원사업 유형 (text, optional)
+    submission_deadline: p.deadline,                 // 접수 마감일시 (text, optional)
+    // organization_type: select 필드 → 자동 매핑 불가, 사용자가 직접 선택
+  };
+}
+
 export default function AgentRunPage() {
   const { agentId } = useParams<{ agentId: string }>();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate    = useNavigate();
+  const location    = useLocation();
 
-  const [agent, setAgent] = useState<Agent | null>(null);
-  const [area, setArea] = useState<Area | null>(null);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [formData, setFormData] = useState<Record<string, string>>({});
+  // ── 상태 ──────────────────────────────────────────────────────
+  const [agent, setAgent]               = useState<Agent | null>(null);
+  const [area,  setArea]                = useState<Area | null>(null);
+  const [projects, setProjects]         = useState<Project[]>([]);
+  const [formData, setFormData]         = useState<Record<string, string>>({});
   const [selectedProject, setSelectedProject] = useState('');
-  const [running, setRunning] = useState(false);
-  const [result, setResult] = useState<AgentRunType | null>(null);
-  const [saved, setSaved] = useState(false);
-  const [saveError, setSaveError] = useState('');
-  const [copied, setCopied] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [running, setRunning]           = useState(false);
+  const [result, setResult]             = useState<AgentRunType | null>(null);
+  const [saved, setSaved]               = useState(false);
+  const [saveError, setSaveError]       = useState('');
+  const [copied, setCopied]             = useState(false);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState('');
 
+  // ── 자동 반영 전용 (government_announcement_analysis) ─────────
+  const prefillApplied = useRef(false);
+  const [prefillDone, setPrefillDone] = useState(false);
+
+  // selectedProgram: 훅 이전에 선언해야 useEffect deps에 사용 가능
+  // agentId + location.state만 필요하므로 loading 전에 안전하게 파생 가능
+  const selectedProgram: SelectedProgram | null =
+    agentId === 'government_announcement_analysis'
+      ? ((location.state as { selectedProgram?: SelectedProgram } | null)?.selectedProgram ?? null)
+      : null;
+
+  // ── 데이터 로딩 ───────────────────────────────────────────────
   useEffect(() => {
     if (!agentId) return;
     Promise.all([agentsApi.getById(agentId), projectsApi.getAll()])
@@ -67,35 +120,50 @@ export default function AgentRunPage() {
       .finally(() => setLoading(false));
   }, [agentId, navigate]);
 
+  // ── 선택 공고 정보 → 입력폼 1회 자동 반영 ────────────────────
+  // government_announcement_analysis Agent에서 selectedProgram이 있을 때만 동작
+  // loading 완료 후 1회만 실행, 이후 사용자 입력 보존
+  useEffect(() => {
+    if (loading) return;
+    if (!selectedProgram) return;
+    if (prefillApplied.current) return;
+    const dDay = calcProgramDDay(selectedProgram.deadline);
+    setFormData(buildPrefillData(selectedProgram, dDay));
+    prefillApplied.current = true;
+    setPrefillDone(true);
+  }, [loading, selectedProgram]);
+
+  // ── Early returns ─────────────────────────────────────────────
   if (loading) return <LoadingSpinner />;
   if (!agent) return null;
 
   const schema = agent.input_schema ?? {};
 
-  // government_announcement_analysis Agent에서만 선택 공고 정보를 state에서 추출
-  // 다른 Agent에서는 null이 되어 요약 박스가 표시되지 않는다
-  const selectedProgram: SelectedProgram | null =
-    agentId === 'government_announcement_analysis'
-      ? ((location.state as { selectedProgram?: SelectedProgram } | null)?.selectedProgram ?? null)
-      : null;
   const programDDay      = selectedProgram ? calcProgramDDay(selectedProgram.deadline) : 0;
   const programAnnoUrl   = selectedProgram ? safeProgramUrl(selectedProgram.announcement_url) : null;
   const programPortalUrl = selectedProgram ? safeProgramUrl(selectedProgram.source_portal_url) : null;
 
+  // ── 이벤트 핸들러 ─────────────────────────────────────────────
   function handleChange(field: string, value: string) {
     setFormData(prev => ({ ...prev, [field]: value }));
   }
 
+  // "선택 공고 정보 다시 반영" 버튼 핸들러 (selectedProgram 있을 때만 표시)
+  function handleReprefill() {
+    if (!selectedProgram) return;
+    const dDay = calcProgramDDay(selectedProgram.deadline);
+    setFormData(buildPrefillData(selectedProgram, dDay));
+    setPrefillDone(true);
+  }
+
   async function handleRun() {
     setError('');
-
     const requiredFields = Object.entries(schema).filter(([, f]) => f.required);
     const missingRequired = requiredFields.filter(([k]) => !formData[k]?.trim());
     if (missingRequired.length > 0) {
       setError(`필수 입력 항목을 채워주세요: ${missingRequired.map(([, f]) => f.label).join(', ')}`);
       return;
     }
-
     setRunning(true);
     setResult(null);
     setSaved(false);
@@ -142,9 +210,10 @@ export default function AgentRunPage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  // ── 렌더링 ───────────────────────────────────────────────────
   return (
     <div className="max-w-4xl">
-      {/* Breadcrumb */}
+      {/* 브레드크럼 */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
         <button onClick={() => navigate('/dashboard')} className="hover:text-gray-900">대시보드</button>
         {area && (
@@ -191,11 +260,11 @@ export default function AgentRunPage() {
               <p className="text-[10px] text-gray-400 mb-0.5">📅 마감일</p>
               <div className="flex items-center gap-1.5 flex-wrap">
                 <p className="text-xs font-semibold text-gray-800">{selectedProgram.deadline}</p>
-                {programDDay < 0  && <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">마감</span>}
-                {programDDay === 0 && <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-bold">D-Day</span>}
-                {programDDay > 0 && programDDay <= 7  && <span className="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full font-bold">D-{programDDay}</span>}
-                {programDDay > 7 && programDDay <= 30 && <span className="text-[10px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded-full">D-{programDDay}</span>}
-                {programDDay > 30 && <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">D-{programDDay}</span>}
+                {programDDay < 0   && <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">마감</span>}
+                {programDDay === 0  && <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-bold">D-Day</span>}
+                {programDDay > 0  && programDDay <= 7  && <span className="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full font-bold">D-{programDDay}</span>}
+                {programDDay > 7  && programDDay <= 30 && <span className="text-[10px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded-full">D-{programDDay}</span>}
+                {programDDay > 30  && <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">D-{programDDay}</span>}
               </div>
             </div>
           </div>
@@ -222,7 +291,7 @@ export default function AgentRunPage() {
             <p className="text-xs text-amber-900 leading-relaxed">{selectedProgram.application_notes}</p>
           </div>
 
-          {/* 외부 링크: announcement_url 있으면 공고문 원문, source_portal_url 있으면 출처 사이트 */}
+          {/* 외부 링크 */}
           {(programAnnoUrl || programPortalUrl) && (
             <div className="flex flex-wrap gap-2 mb-4">
               {programAnnoUrl && (
@@ -240,10 +309,32 @@ export default function AgentRunPage() {
             </div>
           )}
 
-          {/* 안내 문구 */}
-          <p className="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2.5 leading-relaxed">
-            위 공고 정보를 기준으로 공고문 분석을 진행할 수 있습니다. 필요 시 아래 입력값을 보완한 후 Agent를 실행하세요.
-          </p>
+          {/* 자동 반영 상태 + 안내 문구 */}
+          <div className="bg-gray-50 rounded-lg px-3 py-2.5 space-y-2">
+            {prefillDone ? (
+              <>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[11px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                    ✓ 입력값 자동 반영 완료
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  선택 공고 정보가 공고문 분석 입력값에 자동 반영되었습니다. 필요 시 아래 입력값을 보완한 후 Agent를 실행하세요.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleReprefill}
+                  className="text-[11px] text-blue-600 hover:text-blue-700 underline"
+                >
+                  선택 공고 정보 다시 반영
+                </button>
+              </>
+            ) : (
+              <p className="text-xs text-gray-500 leading-relaxed">
+                위 공고 정보를 기준으로 공고문 분석을 진행할 수 있습니다. 필요 시 아래 입력값을 보완한 후 Agent를 실행하세요.
+              </p>
+            )}
+          </div>
         </div>
       )}
 
