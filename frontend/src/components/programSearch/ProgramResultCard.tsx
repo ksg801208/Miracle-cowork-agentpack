@@ -210,9 +210,11 @@ export default function ProgramResultCard({ program, displayRank, isSaved, onSav
             </a>
           )}
 
-          {/* [3] 공고문 분석하기 → AgentRun 이동 */}
+          {/* [3] 공고문 분석하기 — 선택 공고 정보를 location.state로 전달 */}
           <button
-            onClick={() => navigate('/agents/government_announcement_analysis/run')}
+            onClick={() => navigate('/agents/government_announcement_analysis/run', {
+              state: { selectedProgram: program },
+            })}
             className="flex-1 min-w-[8rem] bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2.5 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5"
           >
             공고문 분석하기 →

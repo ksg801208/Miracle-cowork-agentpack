@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { agentsApi, areasApi, projectsApi, documentsApi } from '../services/api';
 import type { Agent, Area, Project, AgentRun as AgentRunType } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -7,9 +7,39 @@ import RunResultViewer from '../components/RunResultViewer';
 import StatusBadge from '../components/StatusBadge';
 import { OUTPUT_TYPE_LABELS, AREA_ICONS } from '../utils';
 
+// ── government_announcement_analysis Agent 전용 ───────────────────────────────
+// 정부지원사업 탐색 / 관심 공고함에서 location.state로 전달되는 선택 공고 정보 타입
+interface SelectedProgram {
+  program_name: string;
+  source: string;
+  source_portal_url?: string;
+  announcement_url?: string;
+  organization: string;
+  fit_score: number;
+  support_amount: string;
+  deadline: string;
+  recommendation_reason: string;
+  required_documents: string[];
+  application_notes: string;
+}
+
+function calcProgramDDay(deadline: string): number {
+  const [y, m, d] = deadline.split('.').map(Number);
+  const deadlineDate = new Date(y, m - 1, d);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.ceil((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function safeProgramUrl(url?: string): string | null {
+  if (!url) return null;
+  return url.startsWith('https://') || url.startsWith('http://') ? url : null;
+}
+
 export default function AgentRunPage() {
   const { agentId } = useParams<{ agentId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [agent, setAgent] = useState<Agent | null>(null);
   const [area, setArea] = useState<Area | null>(null);
@@ -41,6 +71,16 @@ export default function AgentRunPage() {
   if (!agent) return null;
 
   const schema = agent.input_schema ?? {};
+
+  // government_announcement_analysis Agent에서만 선택 공고 정보를 state에서 추출
+  // 다른 Agent에서는 null이 되어 요약 박스가 표시되지 않는다
+  const selectedProgram: SelectedProgram | null =
+    agentId === 'government_announcement_analysis'
+      ? ((location.state as { selectedProgram?: SelectedProgram } | null)?.selectedProgram ?? null)
+      : null;
+  const programDDay      = selectedProgram ? calcProgramDDay(selectedProgram.deadline) : 0;
+  const programAnnoUrl   = selectedProgram ? safeProgramUrl(selectedProgram.announcement_url) : null;
+  const programPortalUrl = selectedProgram ? safeProgramUrl(selectedProgram.source_portal_url) : null;
 
   function handleChange(field: string, value: string) {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -118,6 +158,94 @@ export default function AgentRunPage() {
         <span>/</span>
         <span className="text-gray-900 font-medium">{agent.name_ko}</span>
       </nav>
+
+      {/* 선택 공고 정보 요약 박스 — government_announcement_analysis Agent 전용
+          location.state.selectedProgram이 없으면 이 블록은 렌더링되지 않는다 */}
+      {selectedProgram && (
+        <div className="card mb-6">
+          {/* 헤더 */}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-bold text-gray-900">선택 공고 정보</h2>
+            <span className="text-[11px] text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full font-medium">
+              공고문 분석 연계
+            </span>
+          </div>
+
+          {/* 사업명 + 출처 + 주관기관 + 적합도 */}
+          <h3 className="text-sm font-bold text-gray-900 mb-1.5">{selectedProgram.program_name}</h3>
+          <div className="flex items-center gap-2 flex-wrap mb-4">
+            <span className="text-[11px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+              {selectedProgram.source}
+            </span>
+            <span className="text-[11px] text-gray-500">{selectedProgram.organization}</span>
+            <span className="text-[11px] font-bold text-blue-600">{selectedProgram.fit_score}점</span>
+          </div>
+
+          {/* 지원금 + 마감일 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+            <div className="bg-gray-50 rounded-lg px-3 py-2">
+              <p className="text-[10px] text-gray-400 mb-0.5">💰 지원금 규모</p>
+              <p className="text-xs font-semibold text-gray-800">{selectedProgram.support_amount}</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg px-3 py-2">
+              <p className="text-[10px] text-gray-400 mb-0.5">📅 마감일</p>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <p className="text-xs font-semibold text-gray-800">{selectedProgram.deadline}</p>
+                {programDDay < 0  && <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full">마감</span>}
+                {programDDay === 0 && <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-bold">D-Day</span>}
+                {programDDay > 0 && programDDay <= 7  && <span className="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full font-bold">D-{programDDay}</span>}
+                {programDDay > 7 && programDDay <= 30 && <span className="text-[10px] bg-orange-50 text-orange-600 px-1.5 py-0.5 rounded-full">D-{programDDay}</span>}
+                {programDDay > 30 && <span className="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">D-{programDDay}</span>}
+              </div>
+            </div>
+          </div>
+
+          {/* 추천 사유 */}
+          <div className="bg-blue-50 rounded-lg p-3 mb-3">
+            <p className="text-[11px] font-semibold text-blue-700 mb-1">💬 추천 사유</p>
+            <p className="text-xs text-blue-900 leading-relaxed">{selectedProgram.recommendation_reason}</p>
+          </div>
+
+          {/* 준비자료 */}
+          <div className="mb-3">
+            <p className="text-[11px] font-semibold text-gray-600 mb-1.5">📋 준비자료</p>
+            <div className="flex flex-wrap gap-1.5">
+              {selectedProgram.required_documents.map((doc, i) => (
+                <span key={i} className="text-[11px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{doc}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* 신청 유의사항 */}
+          <div className="bg-amber-50 border border-amber-100 rounded-lg p-3 mb-4">
+            <p className="text-[11px] font-semibold text-amber-700 mb-1">⚠️ 신청 유의사항</p>
+            <p className="text-xs text-amber-900 leading-relaxed">{selectedProgram.application_notes}</p>
+          </div>
+
+          {/* 외부 링크: announcement_url 있으면 공고문 원문, source_portal_url 있으면 출처 사이트 */}
+          {(programAnnoUrl || programPortalUrl) && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {programAnnoUrl && (
+                <a href={programAnnoUrl} target="_blank" rel="noopener noreferrer"
+                  className="text-xs font-medium py-2 px-3 rounded-lg border border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex items-center gap-1">
+                  공고문 원문 보기 <span className="text-blue-400">↗</span>
+                </a>
+              )}
+              {programPortalUrl && (
+                <a href={programPortalUrl} target="_blank" rel="noopener noreferrer"
+                  className="text-xs font-medium py-2 px-3 rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-1">
+                  출처 사이트 보기 <span className="text-gray-400">↗</span>
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* 안내 문구 */}
+          <p className="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2.5 leading-relaxed">
+            위 공고 정보를 기준으로 공고문 분석을 진행할 수 있습니다. 필요 시 아래 입력값을 보완한 후 Agent를 실행하세요.
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Form */}

@@ -245,8 +245,11 @@ export default function SavedPrograms() {
                         출처 사이트 보기 <span className="text-gray-400">↗</span>
                       </a>
                     )}
+                    {/* 선택 공고 정보를 location.state로 전달 */}
                     <button
-                      onClick={() => navigate('/agents/government_announcement_analysis/run')}
+                      onClick={() => navigate('/agents/government_announcement_analysis/run', {
+                        state: { selectedProgram: program },
+                      })}
                       className="flex-1 min-w-[8rem] bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5"
                     >
                       공고문 분석하기 →
