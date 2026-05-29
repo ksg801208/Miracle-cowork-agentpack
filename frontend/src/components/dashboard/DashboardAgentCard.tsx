@@ -22,11 +22,15 @@ interface Props {
 
 export default function DashboardAgentCard({ agent }: Props) {
   const navigate = useNavigate();
-  const canRun = agent.status === 'active' && agent.agent_id !== null;
+  // custom_path가 있거나 실제 agent_id가 있는 active 카드만 실행 가능
+  const canRun = agent.status === 'active' && (!!agent.custom_path || agent.agent_id !== null);
   const cfg = STATUS_CONFIG[agent.status];
 
   const handleRun = () => {
-    if (canRun && agent.agent_id) {
+    if (!canRun) return;
+    if (agent.custom_path) {
+      navigate(agent.custom_path);
+    } else if (agent.agent_id) {
       navigate(`/agents/${agent.agent_id}/run`);
     }
   };

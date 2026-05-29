@@ -12,6 +12,7 @@ export interface DashboardAgent {
   output_type: string;
   status: AgentStatus;
   step: number;
+  custom_path?: string;   // 지정 시 /agents/:id/run 대신 이 경로로 이동
 }
 
 export interface DashboardPlatform {
@@ -31,14 +32,15 @@ export interface DashboardPlatform {
 // ─────────────────────────────────────────────
 const GOVT_RD_AGENTS: DashboardAgent[] = [
   {
-    // 실제 대응 Agent 없음 → v1.2 예정
+    // AgentRun이 아닌 별도 탐색 페이지로 이동 (custom_path)
     agent_id: null,
     step: 1,
     name_ko: '정부지원사업 탐색',
     description: '공고 DB 연동으로 적합한 지원사업을 자동 탐색·추천합니다',
     icon: '🔍',
     output_type: 'list',
-    status: 'planned',
+    status: 'active',
+    custom_path: '/program-search',
   },
   {
     // agents.json: government_announcement_analysis

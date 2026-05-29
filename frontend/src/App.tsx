@@ -4,6 +4,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
+import GovernmentProgramSearch from './pages/GovernmentProgramSearch';
+import SavedPrograms from './pages/SavedPrograms';
 import AreaDetail from './pages/AreaDetail';
 import AgentRunPage from './pages/AgentRun';
 import ProjectList from './pages/ProjectList';
@@ -22,6 +24,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <MainLayout><Dashboard /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/program-search"
+            element={
+              <ProtectedRoute>
+                <MainLayout><GovernmentProgramSearch /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/saved-programs"
+            element={
+              <ProtectedRoute>
+                <MainLayout><SavedPrograms /></MainLayout>
               </ProtectedRoute>
             }
           />
